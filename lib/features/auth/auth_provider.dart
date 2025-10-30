@@ -1,1 +1,4 @@
-abstract class AuthProvider {}
+abstract class AuthProvider {
+  void logIn();
+  void logOut();
+}
