@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
+import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/auth/bloc/auth_state.dart';
 import 'package:home_organizer/features/auth/firebase_auth_provider.dart';
 import 'package:home_organizer/features/auth/widgets/login_view.dart';
 import 'package:home_organizer/features/auth/widgets/register_view.dart';
+import 'package:home_organizer/features/auth/widgets/sent_email_verification_view.dart';
 
 void main() {
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(FirebaseAuthProvider()),
+          create:
+              (_) =>
+                  AuthBloc(FirebaseAuthProvider())..add(AuthEventInitialize()),
         ),
       ],
       child: const MyApp(),
@@ -43,7 +47,11 @@ class HomePage extends StatelessWidget {
     return BlocConsumer<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedOut) {
+          return const LoginView();
+        } else if (state is AuthStateRegistering) {
           return const RegisterView();
+        } else if (state is AuthStateNeedVerification) {
+          return const SentEmailVerificationView();
         }
         return Scaffold(body: CircularProgressIndicator());
       },
