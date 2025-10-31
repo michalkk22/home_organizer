@@ -9,6 +9,7 @@ import 'package:home_organizer/features/auth/widgets/register_view.dart';
 import 'package:home_organizer/features/auth/widgets/sent_email_verification_view.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized;
   runApp(
     MultiBlocProvider(
       providers: [
@@ -18,25 +19,16 @@ void main() {
                   AuthBloc(FirebaseAuthProvider())..add(AuthEventInitialize()),
         ),
       ],
-      child: const MyApp(),
+      child: MaterialApp(
+        title: 'Home Organizer',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        debugShowCheckedModeBanner: false,
+        home: const HomePage(),
+      ),
     ),
   );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Home Organizer',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      debugShowCheckedModeBanner: false,
-      home: const HomePage(),
-    );
-  }
 }
 
 class HomePage extends StatelessWidget {
@@ -52,6 +44,8 @@ class HomePage extends StatelessWidget {
           return const RegisterView();
         } else if (state is AuthStateNeedVerification) {
           return const SentEmailVerificationView();
+        } else if (state is AuthStateLoggedIn) {
+          return Scaffold(body: Text('LOGGED'));
         }
         return Scaffold(body: CircularProgressIndicator());
       },

@@ -4,14 +4,9 @@ import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/auth/widgets/email_and_password_form.dart';
 
-class RegisterView extends StatefulWidget {
+class RegisterView extends StatelessWidget {
   const RegisterView({super.key});
 
-  @override
-  State<RegisterView> createState() => _RegisterViewState();
-}
-
-class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

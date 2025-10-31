@@ -4,14 +4,9 @@ import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/auth/widgets/email_and_password_form.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
-  @override
-  State<LoginView> createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +26,6 @@ class _LoginViewState extends State<LoginView> {
             TextButton(
               onPressed: () {
                 context.read<AuthBloc>().add(const AuthEventWantToRegister());
-                print('want to register');
               },
               child: const Text('Register here'),
             ),
