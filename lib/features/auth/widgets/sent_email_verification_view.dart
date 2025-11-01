@@ -14,18 +14,20 @@ class SentEmailVerificationView extends StatelessWidget {
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text('Please verify your email.'),
-            TextButton(
-              onPressed:
-                  () => context.read<AuthBloc>().add(
-                    const AuthEventWantToRegister(),
-                  ),
-              child: const Text('Back to Register sreen'),
+            const Text(
+              "We've sent you an email with verification link. Please use the link to verify your email.",
             ),
             TextButton(
               onPressed:
                   () => context.read<AuthBloc>().add(const AuthEventLogOut()),
               child: const Text('Back to Login screen'),
+            ),
+            TextButton(
+              onPressed:
+                  () => context.read<AuthBloc>().add(
+                    const AuthEventSendEmailVerification(),
+                  ),
+              child: const Text("Don't have verification email? Send again."),
             ),
           ],
         ),

@@ -22,6 +22,9 @@ class RegisterView extends StatelessWidget {
                   AuthEventRegister(email: email, password: password),
                 );
               },
+              googleCallback: () {
+                context.read<AuthBloc>().add(AuthEventGoogleLogIn());
+              },
             ),
             TextButton(
               onPressed: () {

@@ -22,6 +22,9 @@ class LoginView extends StatelessWidget {
                   AuthEventLogIn(email: email, password: password),
                 );
               },
+              googleCallback: () {
+                context.read<AuthBloc>().add(AuthEventGoogleLogIn());
+              },
             ),
             TextButton(
               onPressed: () {

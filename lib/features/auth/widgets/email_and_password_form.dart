@@ -5,9 +5,11 @@ class EmailAndPasswordForm extends StatefulWidget {
     super.key,
     required this.buttonText,
     required this.callback,
+    required this.googleCallback,
   });
   final String buttonText;
   final void Function(String email, String password) callback;
+  final void Function() googleCallback;
 
   @override
   State<EmailAndPasswordForm> createState() => _EmailAndPasswordFormState();
@@ -52,6 +54,10 @@ class _EmailAndPasswordFormState extends State<EmailAndPasswordForm> {
         TextButton(
           onPressed: () => widget.callback(_email.text, _password.text),
           child: Text(widget.buttonText),
+        ),
+        ElevatedButton(
+          onPressed: widget.googleCallback,
+          child: const Text('With Google'),
         ),
       ],
     );

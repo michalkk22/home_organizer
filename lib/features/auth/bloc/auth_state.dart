@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:home_organizer/models/user.dart';
+import 'package:flutter/foundation.dart' show immutable;
+import 'package:home_organizer/features/auth/auth_user.dart';
 
 @immutable
 abstract class AuthState {
@@ -11,7 +11,8 @@ class AuthStateUninitialized extends AuthState {
 }
 
 class AuthStateLoggedOut extends AuthState {
-  const AuthStateLoggedOut();
+  final Exception? exception;
+  const AuthStateLoggedOut({this.exception});
 }
 
 class AuthStateRegistering extends AuthState {
@@ -19,10 +20,11 @@ class AuthStateRegistering extends AuthState {
 }
 
 class AuthStateNeedVerification extends AuthState {
-  const AuthStateNeedVerification();
+  final Exception? exception;
+  const AuthStateNeedVerification({this.exception});
 }
 
 class AuthStateLoggedIn extends AuthState {
-  final User user;
+  final AuthUser user;
   const AuthStateLoggedIn({required this.user});
 }
