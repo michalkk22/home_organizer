@@ -1,9 +1,14 @@
+import 'package:home_organizer/features/auth/auth_user.dart';
+
 abstract class AuthProvider {
-  Future<void> registerWithEmailAndPassword({
+  AuthUser? get currentUser;
+  Future<AuthUser> createUser({
     required String email,
     required String password,
   });
-  void logIn({required String email, required String password});
-  void logOut();
+  Future<void> sendEmailVerification();
+  Future<AuthUser> logIn({required String email, required String password});
+  Future<AuthUser> googleLogIn();
+  Future<void> logOut();
   Future<void> initialize();
 }

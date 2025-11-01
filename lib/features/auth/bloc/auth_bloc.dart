@@ -12,10 +12,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventRegister>((event, emit) async {
       try {
-        await provider.registerWithEmailAndPassword(
-          email: event.email,
-          password: event.password,
-        );
+        await provider.createUser(email: event.email, password: event.password);
       } catch (e) {
         print(e);
       }

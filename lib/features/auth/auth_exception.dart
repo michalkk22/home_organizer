@@ -13,3 +13,9 @@ class NewtowrkFailAuthException implements Exception {}
 class GenericAuthException implements Exception {}
 
 class UserNotLoggedInAuthException implements Exception {}
+
+class GoogleSignInAuthException implements Exception {}
+
+class DifferentCredentialAuthException implements Exception {}
+
+class InvalidCredentialAuthException implements Exception {}
