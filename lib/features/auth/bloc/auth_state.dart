@@ -24,6 +24,12 @@ class AuthStateNeedVerification extends AuthState {
   const AuthStateNeedVerification({this.exception});
 }
 
+class AuthStateResetPassword extends AuthState {
+  final bool didSendEmail;
+  final Exception? exception;
+  const AuthStateResetPassword({required this.didSendEmail, this.exception});
+}
+
 class AuthStateLoggedIn extends AuthState {
   final AuthUser user;
   const AuthStateLoggedIn({required this.user});

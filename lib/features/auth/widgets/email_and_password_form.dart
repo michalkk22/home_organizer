@@ -5,12 +5,10 @@ class EmailAndPasswordForm extends StatefulWidget {
     super.key,
     required this.buttonText,
     required this.callback,
-    required this.googleCallback,
     this.confirmPassword = false,
   });
   final String buttonText;
   final void Function(String email, String password) callback;
-  final void Function() googleCallback;
   final bool confirmPassword;
 
   @override
@@ -105,7 +103,7 @@ class _EmailAndPasswordFormState extends State<EmailAndPasswordForm> {
         TextButton(
           onPressed:
               () =>
-                  _confirmationCheck()
+                  !widget.confirmPassword || _confirmationCheck()
                       ? widget.callback(_email.text, _password.text)
                       : showDialog(
                         context: context,
@@ -117,10 +115,6 @@ class _EmailAndPasswordFormState extends State<EmailAndPasswordForm> {
                             ),
                       ),
           child: Text(widget.buttonText),
-        ),
-        ElevatedButton(
-          onPressed: widget.googleCallback,
-          child: const Text('Use Google account'),
         ),
       ],
     );

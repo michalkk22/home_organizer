@@ -22,15 +22,23 @@ class LoginView extends StatelessWidget {
                   AuthEventLogIn(email: email, password: password),
                 );
               },
-              googleCallback: () {
-                context.read<AuthBloc>().add(AuthEventGoogleLogIn());
-              },
+            ),
+            TextButton(
+              onPressed:
+                  () => context.read<AuthBloc>().add(AuthEventGoogleLogIn()),
+              child: const Text('Use Google account'),
             ),
             TextButton(
               onPressed: () {
                 context.read<AuthBloc>().add(const AuthEventWantToRegister());
               },
               child: const Text('Register here'),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(const AuthEventResetPassword());
+              },
+              child: const Text('Forgot password?'),
             ),
           ],
         ),

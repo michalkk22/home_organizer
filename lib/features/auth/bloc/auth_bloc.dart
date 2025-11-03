@@ -11,7 +11,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user == null) {
         emit(const AuthStateLoggedOut());
       } else if (!user.isEmailVerified) {
-        emit(const AuthStateNeedVerification());
+        _sendEmailVerification(provider, emit);
       } else {
         emit(AuthStateLoggedIn(user: user));
       }
@@ -20,18 +20,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventRegister>((event, emit) async {
       try {
         await provider.createUser(email: event.email, password: event.password);
+      } on Exception catch (e) {
+        emit(AuthStateLoggedOut(exception: e));
+      }
+      try {
         await provider.sendEmailVerification();
         emit(const AuthStateNeedVerification());
       } on Exception catch (e) {
-        emit(AuthStateLoggedOut(exception: e));
+        emit(AuthStateNeedVerification(exception: e));
       }
     });
 
     on<AuthEventWantToRegister>(
       (event, emit) => emit(const AuthStateRegistering()),
     );
-
-    on<AuthEventWantToLogin>((event, emit) => emit(const AuthStateLoggedOut()));
 
     on<AuthEventLogIn>((event, emit) async {
       try {
@@ -40,7 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           password: event.password,
         );
         if (!user.isEmailVerified) {
-          emit(const AuthStateNeedVerification());
+          _sendEmailVerification(provider, emit);
         } else {
           emit(AuthStateLoggedIn(user: user));
         }
@@ -53,7 +55,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         final user = await provider.googleLogIn();
         if (!user.isEmailVerified) {
-          emit(const AuthStateNeedVerification());
+          _sendEmailVerification(provider, emit);
         } else {
           emit(AuthStateLoggedIn(user: user));
         }
@@ -72,12 +74,34 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<AuthEventSendEmailVerification>((event, emit) {
-      try {
-        provider.sendEmailVerification();
-        emit(const AuthStateNeedVerification());
-      } on Exception catch (e) {
-        emit(AuthStateNeedVerification(exception: e));
-      }
+      _sendEmailVerification(provider, emit);
     });
+
+    on<AuthEventResetPassword>((event, emit) {
+      emit(const AuthStateResetPassword(didSendEmail: false));
+      final email = event.email;
+      if (email == null) {
+        return;
+      }
+
+      try {
+        provider.resetPassword(email: email);
+      } on Exception catch (e) {
+        emit(AuthStateResetPassword(didSendEmail: false, exception: e));
+      }
+      emit(const AuthStateResetPassword(didSendEmail: true));
+    });
+  }
+
+  Future<void> _sendEmailVerification(
+    AuthProvider provider,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      await provider.sendEmailVerification();
+      emit(const AuthStateNeedVerification());
+    } on Exception catch (e) {
+      emit(AuthStateNeedVerification(exception: e));
+    }
   }
 }

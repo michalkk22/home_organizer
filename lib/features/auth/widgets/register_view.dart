@@ -22,14 +22,11 @@ class RegisterView extends StatelessWidget {
                   AuthEventRegister(email: email, password: password),
                 );
               },
-              googleCallback: () {
-                context.read<AuthBloc>().add(AuthEventGoogleLogIn());
-              },
               confirmPassword: true,
             ),
             TextButton(
               onPressed: () {
-                context.read<AuthBloc>().add(const AuthEventWantToLogin());
+                context.read<AuthBloc>().add(const AuthEventLogOut());
               },
               child: const Text('Have an account? Login here'),
             ),

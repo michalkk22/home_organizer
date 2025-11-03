@@ -13,10 +13,6 @@ class AuthEventWantToRegister extends AuthEvent {
   const AuthEventWantToRegister();
 }
 
-class AuthEventWantToLogin extends AuthEvent {
-  const AuthEventWantToLogin();
-}
-
 class AuthEventRegister extends AuthEvent {
   final String email;
   final String password;
@@ -41,4 +37,9 @@ class AuthEventGoogleLogIn extends AuthEvent {
 
 class AuthEventSendEmailVerification extends AuthEvent {
   const AuthEventSendEmailVerification();
+}
+
+class AuthEventResetPassword extends AuthEvent {
+  final String? email;
+  const AuthEventResetPassword({this.email});
 }

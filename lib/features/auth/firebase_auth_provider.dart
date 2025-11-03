@@ -26,18 +26,7 @@ class FirebaseAuthProvider implements AuthProvider {
         throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'email-already-in-use':
-          throw EmailAlreadyInUseAuthException();
-        case 'invalid-email':
-          throw InvalidEmailAuthException();
-        case 'weak-password':
-          throw WeakPasswordAuthException();
-        case 'network-request-failed':
-          throw NewtowrkFailAuthException();
-        default:
-          throw GenericAuthException();
-      }
+      throw _findAuthException(e.code);
     } catch (_) {
       throw GenericAuthException();
     }
@@ -70,18 +59,7 @@ class FirebaseAuthProvider implements AuthProvider {
         throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'invalid-email':
-          throw InvalidEmailAuthException();
-        case 'user-not-found':
-          throw UserNotFoundAuthException();
-        case 'wrong-password':
-          throw WrongPasswordAuthException();
-        case 'network-request-failed':
-          throw NewtowrkFailAuthException();
-        default:
-          throw GenericAuthException();
-      }
+      throw _findAuthException(e.code);
     } catch (_) {
       throw GenericAuthException();
     }
@@ -134,18 +112,37 @@ class FirebaseAuthProvider implements AuthProvider {
     } on GoogleSignInException catch (_) {
       throw GoogleSignInAuthException();
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'account-exists-with-different-credential':
-          throw DifferentCredentialAuthException();
-        case 'invalid-credential':
-          throw InvalidCredentialAuthException();
-        case 'user-not-found':
-          throw UserNotFoundAuthException();
-        case 'wrong-password':
-          throw WrongPasswordAuthException();
-        default:
-          throw GenericAuthException();
-      }
+      throw _findAuthException(e.code);
+    }
+  }
+
+  @override
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw _findAuthException(e.code);
+    }
+  }
+
+  Exception _findAuthException(String code) {
+    switch (code) {
+      case 'invalid-email':
+        throw InvalidEmailAuthException();
+      case 'weak-password':
+        throw WeakPasswordAuthException();
+      case 'network-request-failed':
+        throw NewtowrkFailAuthException();
+      case 'user-not-found':
+        throw UserNotFoundAuthException();
+      case 'wrong-password':
+        throw WrongPasswordAuthException();
+      case 'account-exists-with-different-credential':
+        throw DifferentCredentialAuthException();
+      case 'invalid-credential':
+        throw InvalidCredentialAuthException();
+      default:
+        throw GenericAuthException();
     }
   }
 }

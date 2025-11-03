@@ -6,6 +6,7 @@ import 'package:home_organizer/features/auth/bloc/auth_state.dart';
 import 'package:home_organizer/features/auth/firebase_auth_provider.dart';
 import 'package:home_organizer/features/auth/widgets/login_view.dart';
 import 'package:home_organizer/features/auth/widgets/register_view.dart';
+import 'package:home_organizer/features/auth/widgets/reset_password_view.dart';
 import 'package:home_organizer/features/auth/widgets/sent_email_verification_view.dart';
 
 void main() {
@@ -44,6 +45,8 @@ class HomePage extends StatelessWidget {
           return const RegisterView();
         } else if (state is AuthStateNeedVerification) {
           return const SentEmailVerificationView();
+        } else if (state is AuthStateResetPassword) {
+          return ResetPasswordView(didSendEmail: state.didSendEmail);
         } else if (state is AuthStateLoggedIn) {
           return Scaffold(
             appBar: AppBar(
