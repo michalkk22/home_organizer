@@ -31,6 +31,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (event, emit) => emit(const AuthStateRegistering()),
     );
 
+    on<AuthEventWantToLogin>((event, emit) => emit(const AuthStateLoggedOut()));
+
     on<AuthEventLogIn>((event, emit) async {
       try {
         final user = await provider.logIn(
@@ -49,7 +51,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventGoogleLogIn>((event, emit) async {
       try {
-        await provider.googleLogIn();
+        final user = await provider.googleLogIn();
+        if (!user.isEmailVerified) {
+          emit(const AuthStateNeedVerification());
+        } else {
+          emit(AuthStateLoggedIn(user: user));
+        }
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e));
       }

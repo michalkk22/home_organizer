@@ -28,7 +28,7 @@ class RegisterView extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                context.read<AuthBloc>().add(const AuthEventLogOut());
+                context.read<AuthBloc>().add(const AuthEventWantToLogin());
               },
               child: const Text('Have an account? Login here'),
             ),

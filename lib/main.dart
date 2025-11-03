@@ -45,7 +45,21 @@ class HomePage extends StatelessWidget {
         } else if (state is AuthStateNeedVerification) {
           return const SentEmailVerificationView();
         } else if (state is AuthStateLoggedIn) {
-          return Scaffold(body: Text('LOGGED'));
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Home Organizer'),
+              backgroundColor: Colors.blue,
+              leading: Icon(Icons.wheelchair_pickup),
+              actions: [
+                IconButton(
+                  onPressed:
+                      () => context.read<AuthBloc>().add(AuthEventLogOut()),
+                  icon: Icon(Icons.logout),
+                ),
+              ],
+            ),
+            body: Text('LOGGED'),
+          );
         }
         return Scaffold(body: CircularProgressIndicator());
       },

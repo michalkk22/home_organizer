@@ -102,6 +102,8 @@ class FirebaseAuthProvider implements AuthProvider {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
+    await GoogleSignIn.instance.initialize();
   }
 
   @override
@@ -122,6 +124,7 @@ class FirebaseAuthProvider implements AuthProvider {
         idToken: googleAuth.idToken,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
+
       final user = currentUser;
       if (user != null) {
         return user;

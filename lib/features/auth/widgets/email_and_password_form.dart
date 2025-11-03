@@ -57,7 +57,7 @@ class _EmailAndPasswordFormState extends State<EmailAndPasswordForm> {
         ),
         ElevatedButton(
           onPressed: widget.googleCallback,
-          child: const Text('With Google'),
+          child: const Text('Use Google account'),
         ),
       ],
     );

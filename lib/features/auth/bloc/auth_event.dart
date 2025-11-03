@@ -13,6 +13,10 @@ class AuthEventWantToRegister extends AuthEvent {
   const AuthEventWantToRegister();
 }
 
+class AuthEventWantToLogin extends AuthEvent {
+  const AuthEventWantToLogin();
+}
+
 class AuthEventRegister extends AuthEvent {
   final String email;
   final String password;
