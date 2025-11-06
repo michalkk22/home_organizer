@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
-import 'package:home_organizer/features/auth/widgets/email_and_password_form.dart';
+import 'package:home_organizer/features/auth/ui/widgets/email_and_password_form.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_organizer/features/auth/auth_provider.dart';
+import 'package:home_organizer/features/auth/data/auth_provider.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/auth/bloc/auth_state.dart';
 
@@ -66,11 +66,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventLogOut>((event, emit) async {
       try {
-        provider.logOut();
+        await provider.logOut();
+        print('AuthBloc: logout succeeded');
+        emit(const AuthStateLoggedOut());
+        print('AuthBloc: emitted LoggedOut');
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e));
       }
-      emit(const AuthStateLoggedOut());
     });
 
     on<AuthEventSendEmailVerification>((event, emit) {

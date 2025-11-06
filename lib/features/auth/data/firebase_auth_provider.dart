@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart'
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart'
     show GoogleSignIn, GoogleSignInException;
-import 'package:home_organizer/features/auth/auth_exception.dart';
-import 'package:home_organizer/features/auth/auth_provider.dart';
-import 'package:home_organizer/features/auth/auth_user.dart';
+import 'package:home_organizer/features/auth/domain/auth_exception.dart';
+import 'package:home_organizer/features/auth/data/auth_provider.dart';
+import 'package:home_organizer/features/auth/data/auth_user.dart';
 import 'package:home_organizer/firebase_options.dart';
 
 class FirebaseAuthProvider implements AuthProvider {
