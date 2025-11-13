@@ -7,7 +7,7 @@ import 'package:home_organizer/features/auth/ui/views/register_view.dart';
 import 'package:home_organizer/features/auth/ui/views/reset_password_view.dart';
 import 'package:home_organizer/features/auth/ui/views/sent_email_verification_view.dart';
 import 'package:home_organizer/features/home/ui/home_page.dart';
-import 'package:home_organizer/utils/loading_screen.dart';
+import 'package:home_organizer/utils/loading/loading_screen.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
