@@ -7,6 +7,7 @@ import 'package:home_organizer/features/auth/ui/views/register_view.dart';
 import 'package:home_organizer/features/auth/ui/views/reset_password_view.dart';
 import 'package:home_organizer/features/auth/ui/views/sent_email_verification_view.dart';
 import 'package:home_organizer/features/home/ui/home_page.dart';
+import 'package:home_organizer/utils/loading_screen.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -16,7 +17,7 @@ class AuthPage extends StatelessWidget {
     return BlocConsumer<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
-          return HomePage();
+          return const HomePage();
         } else if (state is AuthStateLoggedOut) {
           return const LoginView();
         } else if (state is AuthStateRegistering) {
@@ -28,7 +29,13 @@ class AuthPage extends StatelessWidget {
         }
         return Container();
       },
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state.isLoading) {
+          LoadingScreen().show(context: context, text: state.loadingText);
+        } else {
+          LoadingScreen().hide();
+        }
+      },
     );
   }
 }
