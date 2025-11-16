@@ -1,40 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
-import 'package:home_organizer/features/auth/bloc/auth_event.dart';
-import 'package:home_organizer/features/chat/ui/chat_page.dart';
-import 'package:home_organizer/features/expenses/ui/expenses_page.dart';
+import 'package:home_organizer/features/home/bloc/home_bloc.dart';
+import 'package:home_organizer/features/home/bloc/home_state.dart';
+import 'package:home_organizer/features/home/ui/views/home_view.dart';
+import 'package:home_organizer/features/home/ui/views/set_username_view.dart';
+import 'package:home_organizer/utils/loading/loading_screen.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Home Organizer',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          leading: Icon(Icons.wheelchair_pickup),
-          actions: [
-            IconButton(
-              onPressed: () => context.read<AuthBloc>().add(AuthEventLogOut()),
-              icon: Icon(Icons.logout),
-            ),
-          ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.message)),
-              Tab(icon: Icon(Icons.wallet)),
-            ],
-          ),
-        ),
-        body: TabBarView(children: [ChatPage(), ExpensesPage()]),
-      ),
+    return BlocConsumer<HomeBloc, HomeState>(
+      builder: (context, state) {
+        if (state is HomeStateInHome) {
+          // TODO: provide the rest of blocs here
+          return HomeView();
+        } else if (state is HomeStateNeedUserName) {
+          return SetUsernameView();
+        }
+        return Container();
+      },
+      listener: (BuildContext context, HomeState state) {
+        if (state.isLoading) {
+          LoadingScreen().show(context: context, text: '');
+        } else {
+          LoadingScreen().hide();
+        }
+      },
     );
   }
 }

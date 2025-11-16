@@ -8,14 +8,9 @@ import 'package:home_organizer/features/auth/ui/auth_page.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized;
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthBloc>(
-          create:
-              (_) =>
-                  AuthBloc(FirebaseAuthProvider())..add(AuthEventInitialize()),
-        ),
-      ],
+    BlocProvider<AuthBloc>(
+      create:
+          (_) => AuthBloc(FirebaseAuthProvider())..add(AuthEventInitialize()),
       child: MyApp(),
     ),
   );

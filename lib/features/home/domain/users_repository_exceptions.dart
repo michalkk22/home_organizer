@@ -1,3 +1,3 @@
-class NoDataUsersRepositoryException implements Exception {}
+class CouldNotRetrieveDataUsersRepositoryException implements Exception {}
 
 class CouldNotUpdateUsersRepositoryException implements Exception {}

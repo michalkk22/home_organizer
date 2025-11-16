@@ -21,17 +21,22 @@ class FirebaseUsersRepository implements UsersRepository {
     } catch (_) {
       throw CouldNotUpdateUsersRepositoryException();
     }
-    return _user;
+
+    final user = await _user;
+    if (user == null) {
+      throw CouldNotRetrieveDataUsersRepositoryException();
+    }
+    return user;
   }
 
   @override
-  Future<User> get() async => _user;
+  Future<User?> get user async => _user;
 
-  Future<User> get _user async {
+  Future<User?> get _user async {
     if (cachedUser == null) {
       final doc = await users.doc(userId).get();
       if (doc.data() == null) {
-        throw NoDataUsersRepositoryException();
+        return null;
       }
       cachedUser = User.fromFirebase(doc.id, doc.data()!);
     }
