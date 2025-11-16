@@ -1,12 +1,16 @@
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:home_organizer/features/home/data/models/permissions.dart';
 
 @immutable
 class User {
-  final String id;
-  final String name;
-  const User({required this.id, required this.name});
+  final String? name;
+  final Permissions? permissions;
+  const User({required this.name, this.permissions});
 
-  factory User.fromFirebase(String id, Map<String, dynamic> data) {
-    return User(id: id, name: data['name'] as String? ?? '');
+  factory User.fromFirestore({
+    required Map<String, dynamic> data,
+    Permissions? permissions,
+  }) {
+    return User(name: data['name'], permissions: permissions);
   }
 }

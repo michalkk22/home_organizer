@@ -8,6 +8,8 @@ import 'package:home_organizer/features/auth/ui/views/reset_password_view.dart';
 import 'package:home_organizer/features/auth/ui/views/sent_email_verification_view.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_event.dart';
+import 'package:home_organizer/features/home/data/repositories/firebase_homes_repository.dart';
+import 'package:home_organizer/features/home/data/repositories/firebase_permissions_repository.dart';
 import 'package:home_organizer/features/home/data/repositories/firebase_users_repository.dart';
 import 'package:home_organizer/features/home/ui/home_page.dart';
 import 'package:home_organizer/utils/loading/loading_screen.dart';
@@ -20,11 +22,17 @@ class AuthPage extends StatelessWidget {
     return BlocConsumer<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {
+          final usersRepository = FirebaseUsersRepository(state.user.id);
           return BlocProvider(
             create:
-                (context) =>
-                    HomeBloc(FirebaseUsersRepository(userId: state.user.id))
-                      ..add(HomeEventLoggedIn()),
+                (context) => HomeBloc(
+                  usersRepository,
+                  FirebaseHomesRepository(
+                    state.user.id,
+                    usersRepository,
+                    FirebasePermissionsRepository(),
+                  ),
+                )..add(HomeEventLoggedIn()),
             child: HomePage(),
           );
         } else if (state is AuthStateLoggedOut) {

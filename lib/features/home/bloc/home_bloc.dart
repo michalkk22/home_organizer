@@ -5,7 +5,6 @@ import 'package:home_organizer/features/home/data/models/home.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
 import 'package:home_organizer/features/home/data/repositories/homes_repository.dart';
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
-import 'package:home_organizer/features/home/domain/home_exception.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc(UsersRepository users, HomesRepository homes)
@@ -25,18 +24,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
 
     on<HomeEventSetName>((event, emit) async {
-      final newName = event.userName;
-      if (newName.length < 4) {
-        emit(
-          HomeStateNeedUserName(
-            isLoading: false,
-            exception: InvalidUsernameHomeException(),
-          ),
-        );
-      }
       try {
         emit(HomeStateNeedUserName(isLoading: true));
-        await users.setName(newName);
+        await users.setName(event.userName);
       } on Exception catch (e) {
         emit(HomeStateNeedUserName(isLoading: false, exception: e));
         return;
@@ -45,18 +35,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
 
     on<HomeEventCreateHome>((event, emit) async {
-      final name = event.homeName;
-      if (name.length < 4) {
-        emit(
-          HomeStateNoHomes(
-            isLoading: false,
-            exception: InvalidHomenameHomeException(),
-          ),
-        );
-      }
       try {
         emit(HomeStateNeedUserName(isLoading: true));
-        await homes.create(name);
+        await homes.create(event.homeName);
       } on Exception catch (e) {
         emit(HomeStateNeedUserName(isLoading: false, exception: e));
         return;

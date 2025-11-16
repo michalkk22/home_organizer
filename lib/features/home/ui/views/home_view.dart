@@ -4,9 +4,11 @@ import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/chat/ui/chat_page.dart';
 import 'package:home_organizer/features/expenses/ui/expenses_page.dart';
+import 'package:home_organizer/features/home/data/models/home.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  const HomeView({super.key, required this.home});
+  final Home home;
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +16,7 @@ class HomeView extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Home Organizer',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          title: Text(home.name, style: Theme.of(context).textTheme.titleLarge),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           leading: Icon(Icons.wheelchair_pickup),
           actions: [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_state.dart';
+import 'package:home_organizer/features/home/ui/views/create_home_view.dart';
 import 'package:home_organizer/features/home/ui/views/home_view.dart';
 import 'package:home_organizer/features/home/ui/views/set_username_view.dart';
 import 'package:home_organizer/utils/loading/loading_screen.dart';
@@ -15,9 +16,12 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         if (state is HomeStateInHome) {
           // TODO: provide the rest of blocs here
-          return HomeView();
+          // can pass home and user
+          return HomeView(home: state.home);
         } else if (state is HomeStateNeedUserName) {
           return SetUsernameView();
+        } else if (state is HomeStateNoHomes) {
+          return CreateHomeView();
         }
         return Container();
       },
