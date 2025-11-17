@@ -54,8 +54,9 @@ class FirebaseChatRepository implements ChatRepository {
             );
 
             var name = sender?.name ?? 'deleted user';
+            var incoming = sender?.id != _userId;
 
-            messages.add(Message.fromFirebase(name, doc));
+            messages.add(Message.fromFirebase(name, doc, incoming));
           }
           return messages;
         });

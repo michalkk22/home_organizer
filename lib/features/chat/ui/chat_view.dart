@@ -19,7 +19,9 @@ class ChatView extends StatelessWidget {
           Expanded(
             child: ListView(
               children:
-                  messages.map((message) => _messageCard(message)).toList(),
+                  messages
+                      .map((message) => _messageCard(context, message))
+                      .toList(),
             ),
           ),
           ChatInput(
@@ -33,7 +35,31 @@ class ChatView extends StatelessWidget {
     );
   }
 
-  Widget _messageCard(Message message) {
-    return Card(margin: EdgeInsets.all(2), child: Text(message.text));
+  Widget _messageCard(BuildContext context, Message message) {
+    final isIncoming = message.incoming;
+
+    return Align(
+      alignment: isIncoming ? Alignment.centerLeft : Alignment.centerRight,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color:
+              isIncoming
+                  ? Theme.of(context).colorScheme.inversePrimary
+                  : Theme.of(context).colorScheme.primary,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          message.text,
+          style: TextStyle(
+            color:
+                isIncoming
+                    ? Theme.of(context).colorScheme.secondary
+                    : Colors.white,
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -16,4 +16,15 @@ class User {
     final data = snapshot.data();
     return User(id: snapshot.id, name: data?['name'], permissions: permissions);
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! User) {
+      return false;
+    }
+    return id == other.id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

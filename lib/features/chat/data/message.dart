@@ -7,16 +7,19 @@ class Message {
   final String sender;
   final String text;
   final DateTime timestamp;
+  final bool incoming;
 
   const Message({
     required this.sender,
     required this.text,
     required this.timestamp,
+    required this.incoming,
   });
 
   factory Message.fromFirebase(
     String senderName,
     DocumentSnapshot<Map<String, dynamic>> snapshot,
+    bool incoming,
   ) {
     final data = snapshot.data();
     final timestamp =
@@ -25,6 +28,7 @@ class Message {
       sender: senderName,
       text: data?[ChatCollectionNames.textFieldName],
       timestamp: timestamp.toDate(),
+      incoming: incoming,
     );
   }
 }
