@@ -43,6 +43,7 @@ class FirebaseChatRepository implements ChatRepository {
   Stream<Iterable<Message>> getMessages() {
     return _chat
         .orderBy(ChatCollectionNames.timestampFieldName)
+        .limit(10) // TODO: maybe add pagination
         .snapshots()
         .asyncMap((snapshot) async {
           List<Message> messages = [];
