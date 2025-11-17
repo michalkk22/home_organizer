@@ -85,6 +85,6 @@ class FirebaseHomesRepository implements HomesRepository {
       }
     }
 
-    return Home.fromFirestore(homeSnapshot: homeSnapshot, members: members);
+    return Home.fromFirestore(snapshot: homeSnapshot, members: members);
   }
 }

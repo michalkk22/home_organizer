@@ -5,6 +5,7 @@ import 'package:home_organizer/features/home/data/models/home.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
 import 'package:home_organizer/features/home/data/repositories/homes_repository.dart';
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
+import 'package:home_organizer/utils/injection/repositories_injection.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc(UsersRepository users, HomesRepository homes)
@@ -20,6 +21,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeStateNoHomes(isLoading: false));
         return;
       }
+      RepositoriesInjection().setupOtherRepositories(user.id, home.id);
       emit(HomeStateInHome(isLoading: false, user: user, home: home));
     });
 

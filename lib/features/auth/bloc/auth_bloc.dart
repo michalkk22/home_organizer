@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/auth/data/auth_provider.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/auth/bloc/auth_state.dart';
+import 'package:home_organizer/features/auth/data/auth_user.dart';
+import 'package:home_organizer/utils/injection/repositories_injection.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(AuthProvider provider)
@@ -14,7 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else if (!user.isEmailVerified) {
         _sendEmailVerification(provider, emit);
       } else {
-        emit(AuthStateLoggedIn(user: user, isLoading: false));
+        _setupReposAndLogIn(user, emit);
       }
     });
 
@@ -49,7 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (!user.isEmailVerified) {
           _sendEmailVerification(provider, emit);
         } else {
-          emit(AuthStateLoggedIn(user: user, isLoading: false));
+          _setupReposAndLogIn(user, emit);
         }
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e, isLoading: false));
@@ -68,7 +70,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (!user.isEmailVerified) {
           _sendEmailVerification(provider, emit);
         } else {
-          emit(AuthStateLoggedIn(user: user, isLoading: false));
+          _setupReposAndLogIn(user, emit);
         }
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e, isLoading: false));
@@ -77,7 +79,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthEventLogOut>((event, emit) async {
       try {
-        //TODO
         await provider.logOut();
         emit(const AuthStateLoggedOut(isLoading: false));
       } on Exception catch (e) {
@@ -112,6 +113,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(const AuthStateResetPassword(didSendEmail: true, isLoading: false));
     });
+  }
+
+  void _setupReposAndLogIn(AuthUser user, Emitter<AuthState> emit) {
+    RepositoriesInjection().setupInitialRepositories(user.id);
+    emit(AuthStateLoggedIn(user: user, isLoading: false));
   }
 
   Future<void> _sendEmailVerification(

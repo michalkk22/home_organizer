@@ -48,6 +48,6 @@ class FirebaseUsersRepository implements UsersRepository {
     if (doc.data() == null) {
       return null;
     }
-    return User.fromFirestore(data: doc.data()!);
+    return User.fromFirestore(snapshot: doc);
   }
 }
