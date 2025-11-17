@@ -63,11 +63,11 @@ class FirebaseHomesRepository implements HomesRepository {
       return null;
     }
     final homeSnapshot = homes.docs.first;
-    final userIds =
-        homeSnapshot.data()[HomesCollectionNames.membersFieldName]
-            as List<String>?;
+    final userIds = List<String>.from(
+      homeSnapshot.data()[HomesCollectionNames.membersFieldName] ?? [],
+    );
 
-    if (userIds == null || userIds.isEmpty) {
+    if (userIds.isEmpty) {
       throw CouldNotRetrieveDataHomesRepositoryException();
     }
 
