@@ -25,4 +25,8 @@ class RepositoriesInjection {
       () => FirebaseChatRepository(userId, homeId, getIt<UsersRepository>()),
     );
   }
+
+  void reset() {
+    getIt.reset();
+  }
 }

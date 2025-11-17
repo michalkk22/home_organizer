@@ -25,7 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthStateRegistering(isLoading: true));
         await provider.createUser(email: event.email, password: event.password);
       } on Exception catch (e) {
-        emit(AuthStateLoggedOut(exception: e, isLoading: false));
+        emit(AuthStateRegistering(exception: e, isLoading: false));
       }
 
       try {
@@ -80,6 +80,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventLogOut>((event, emit) async {
       try {
         await provider.logOut();
+        RepositoriesInjection().reset();
         emit(const AuthStateLoggedOut(isLoading: false));
       } on Exception catch (e) {
         emit(AuthStateLoggedOut(exception: e, isLoading: false));
