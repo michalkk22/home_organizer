@@ -25,12 +25,12 @@ class AuthStateLoggedOut extends AuthState {
 }
 
 class AuthStateRegistering extends AuthState {
-  const AuthStateRegistering({required super.isLoading});
+  final Exception? exception;
+  const AuthStateRegistering({required super.isLoading, this.exception});
 }
 
 class AuthStateNeedVerification extends AuthState {
-  final Exception? exception;
-  const AuthStateNeedVerification({this.exception, required super.isLoading});
+  const AuthStateNeedVerification({required super.isLoading});
 }
 
 class AuthStateResetPassword extends AuthState {
