@@ -14,25 +14,34 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(home.name, style: Theme.of(context).textTheme.titleLarge),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          leading: Icon(Icons.wheelchair_pickup),
-          actions: [
-            IconButton(
-              onPressed: () => context.read<AuthBloc>().add(AuthEventLogOut()),
-              icon: Icon(Icons.logout),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
+        onPanDown: (_) => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              home.name,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-          ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.message)),
-              Tab(icon: Icon(Icons.wallet)),
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            leading: Icon(Icons.wheelchair_pickup),
+            actions: [
+              IconButton(
+                onPressed:
+                    () => context.read<AuthBloc>().add(AuthEventLogOut()),
+                icon: Icon(Icons.logout),
+              ),
             ],
+            bottom: const TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.message)),
+                Tab(icon: Icon(Icons.wallet)),
+              ],
+            ),
           ),
+          body: TabBarView(children: [ChatPage(), ExpensesPage()]),
         ),
-        body: TabBarView(children: [ChatPage(), ExpensesPage()]),
       ),
     );
   }
