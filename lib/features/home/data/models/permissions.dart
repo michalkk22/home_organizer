@@ -13,7 +13,7 @@ class Permissions {
   ) {
     final data = snapshot.data();
     return Permissions(
-      isOwner: data?[HomesCollectionNames.isOwnerFieldName] ?? false,
+      isOwner: data?[PermissionsCollectionNames.isOwnerFieldName] ?? false,
     );
   }
 }

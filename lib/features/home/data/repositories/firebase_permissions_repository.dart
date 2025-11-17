@@ -15,7 +15,7 @@ class FirebasePermissionsRepository implements PermissionsRepository {
         await db
             .collection(HomesCollectionNames.collectionName)
             .doc(homeId)
-            .collection(HomesCollectionNames.permissionsCollectionName)
+            .collection(PermissionsCollectionNames.collectionName)
             .doc(userId)
             .get();
 

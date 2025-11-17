@@ -30,14 +30,16 @@ class FirebaseHomesRepository implements HomesRepository {
       final batch = db.batch();
       final homeRef = db.collection(HomesCollectionNames.collectionName).doc();
       final inhabitantsRef = homeRef
-          .collection(HomesCollectionNames.permissionsCollectionName)
+          .collection(PermissionsCollectionNames.collectionName)
           .doc(userId);
 
       batch.set(homeRef, {
         HomesCollectionNames.nameFieldName: name,
         HomesCollectionNames.membersFieldName: [userId],
       });
-      batch.set(inhabitantsRef, {HomesCollectionNames.isOwnerFieldName: true});
+      batch.set(inhabitantsRef, {
+        PermissionsCollectionNames.isOwnerFieldName: true,
+      });
 
       await batch.commit();
     } on Exception catch (_) {
