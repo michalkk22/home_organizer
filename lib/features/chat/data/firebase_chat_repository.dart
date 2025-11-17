@@ -23,7 +23,7 @@ class FirebaseChatRepository implements ChatRepository {
       await _chat.add({
         ChatCollectionNames.senderIdFieldName: _userId,
         ChatCollectionNames.textFieldName: text,
-        ChatCollectionNames.timestampFieldName: DateTime.now(),
+        ChatCollectionNames.timestampFieldName: DateTime.timestamp(),
       });
     } catch (e) {
       throw CouldNotSendChatRepositoryException();
@@ -53,7 +53,7 @@ class FirebaseChatRepository implements ChatRepository {
               doc.data()[ChatCollectionNames.senderIdFieldName],
             );
 
-            var name = sender?.name ?? 'deleted';
+            var name = sender?.name ?? 'deleted user';
 
             messages.add(Message.fromFirebase(name, doc));
           }

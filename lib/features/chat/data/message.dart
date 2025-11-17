@@ -19,10 +19,12 @@ class Message {
     DocumentSnapshot<Map<String, dynamic>> snapshot,
   ) {
     final data = snapshot.data();
+    final timestamp =
+        data?[ChatCollectionNames.timestampFieldName] as Timestamp;
     return Message(
       sender: senderName,
       text: data?[ChatCollectionNames.textFieldName],
-      timestamp: data?[ChatCollectionNames.timestampFieldName],
+      timestamp: timestamp.toDate(),
     );
   }
 }
