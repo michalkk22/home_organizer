@@ -20,3 +20,10 @@ abstract class ChatCollectionNames {
   static const String textFieldName = 'text';
   static const String timestampFieldName = 'timestamp';
 }
+
+abstract class InvitationsCollectionNames {
+  static const String collectionName = 'invitations';
+  static const String homeIdFieldName = 'homeId';
+  static const String createdByFieldName = 'createbBy';
+  static const String expiresAtFieldName = 'expiresAt';
+}

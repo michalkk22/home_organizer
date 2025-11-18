@@ -9,17 +9,17 @@ import 'package:home_organizer/features/home/data/repositories/users_repository.
 import 'package:home_organizer/features/home/domain/homes_repository_exception.dart';
 
 class FirebaseHomesRepository implements HomesRepository {
-  final String userId;
+  final String _userId;
   final UsersRepository _usersRepository;
   final PermissionsRepository _permissionsRepository;
 
   FirebaseHomesRepository(
-    this.userId,
+    this._userId,
     this._usersRepository,
     this._permissionsRepository,
   );
 
-  final db = FirebaseFirestore.instance;
+  final _db = FirebaseFirestore.instance;
 
   @override
   Future<Home> create(String name) async {
@@ -27,15 +27,15 @@ class FirebaseHomesRepository implements HomesRepository {
       throw InvalidNameHomesRepositoryException();
     }
     try {
-      final batch = db.batch();
-      final homeRef = db.collection(HomesCollectionNames.collectionName).doc();
+      final batch = _db.batch();
+      final homeRef = _db.collection(HomesCollectionNames.collectionName).doc();
       final inhabitantsRef = homeRef
           .collection(PermissionsCollectionNames.collectionName)
-          .doc(userId);
+          .doc(_userId);
 
       batch.set(homeRef, {
         HomesCollectionNames.nameFieldName: name,
-        HomesCollectionNames.membersFieldName: [userId],
+        HomesCollectionNames.membersFieldName: [_userId],
       });
       batch.set(inhabitantsRef, {
         PermissionsCollectionNames.isOwnerFieldName: true,
@@ -56,9 +56,12 @@ class FirebaseHomesRepository implements HomesRepository {
   @override
   Future<Home?> get home async {
     final homes =
-        await db
+        await _db
             .collection(HomesCollectionNames.collectionName)
-            .where(HomesCollectionNames.membersFieldName, arrayContains: userId)
+            .where(
+              HomesCollectionNames.membersFieldName,
+              arrayContains: _userId,
+            )
             .get();
 
     if (homes.docs.isEmpty) {
@@ -79,12 +82,27 @@ class FirebaseHomesRepository implements HomesRepository {
       if (user != null) {
         final permissions = await _permissionsRepository.get(
           homeId: homeSnapshot.id,
-          userId: userId,
+          userId: _userId,
         );
         members.putIfAbsent(user, () => permissions);
       }
     }
 
     return Home.fromFirestore(snapshot: homeSnapshot, members: members);
+  }
+
+  @override
+  Future<String?> getName(String id) async {
+    try {
+      final home =
+          await _db
+              .collection(HomesCollectionNames.collectionName)
+              .doc(id)
+              .get();
+      final homeName = home.data()?[HomesCollectionNames.nameFieldName];
+      return homeName;
+    } catch (e) {
+      throw CouldNotRetrieveDataHomesRepositoryException();
+    }
   }
 }

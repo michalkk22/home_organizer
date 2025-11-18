@@ -33,7 +33,7 @@ class HomeView extends StatelessWidget {
                 icon: Icon(Icons.logout),
               ),
             ],
-            bottom: const TabBar(
+            bottom: TabBar(
               tabs: [
                 Tab(icon: Icon(Icons.message)),
                 Tab(icon: Icon(Icons.wallet)),

@@ -9,18 +9,18 @@ class FirebaseUsersRepository implements UsersRepository {
 
   FirebaseUsersRepository(this._userId);
 
-  final users = FirebaseFirestore.instance.collection(
+  final _users = FirebaseFirestore.instance.collection(
     UserCollectionNames.collectionName,
   );
-  User? cachedUser;
+  User? _cachedUser;
 
   @override
   Future<User> setName(String name) async {
     if (name.length < 4) {
       throw InvalidNameUsersRepositoryException();
     }
-    cachedUser = null;
-    final docRef = users.doc(_userId);
+    _cachedUser = null;
+    final docRef = _users.doc(_userId);
     try {
       await docRef.set({UserCollectionNames.nameFieldName: name});
     } catch (_) {
@@ -38,13 +38,13 @@ class FirebaseUsersRepository implements UsersRepository {
   Future<User?> get user async => _user;
 
   Future<User?> get _user async {
-    cachedUser ??= await getById(_userId);
-    return cachedUser;
+    _cachedUser ??= await getById(_userId);
+    return _cachedUser;
   }
 
   @override
-  Future<User?> getById(String name) async {
-    final doc = await users.doc(_userId).get();
+  Future<User?> getById(String id) async {
+    final doc = await _users.doc(id).get();
     if (doc.data() == null) {
       return null;
     }

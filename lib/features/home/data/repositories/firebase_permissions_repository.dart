@@ -4,7 +4,7 @@ import 'package:home_organizer/features/home/data/models/permissions.dart';
 import 'package:home_organizer/features/home/data/repositories/permissions_repository.dart';
 
 class FirebasePermissionsRepository implements PermissionsRepository {
-  final db = FirebaseFirestore.instance;
+  final _db = FirebaseFirestore.instance;
 
   @override
   Future<Permissions> get({
@@ -12,7 +12,7 @@ class FirebasePermissionsRepository implements PermissionsRepository {
     required String userId,
   }) async {
     final doc =
-        await db
+        await _db
             .collection(HomesCollectionNames.collectionName)
             .doc(homeId)
             .collection(PermissionsCollectionNames.collectionName)
