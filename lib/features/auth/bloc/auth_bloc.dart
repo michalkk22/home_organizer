@@ -123,7 +123,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _setupReposAndLogIn(AuthUser user, Emitter<AuthState> emit) {
-    RepositoriesInjection().setupInitialRepositories(user.id);
+    RepositoriesInjection().setupUserScopedRepositories(user.id);
     emit(AuthStateLoggedIn(user: user, isLoading: false));
   }
 

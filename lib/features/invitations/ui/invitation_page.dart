@@ -1,0 +1,87 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
+import 'package:home_organizer/features/auth/bloc/auth_state.dart';
+import 'package:home_organizer/features/auth/ui/auth_page.dart';
+import 'package:home_organizer/features/invitations/bloc/invitation_bloc.dart';
+import 'package:home_organizer/features/invitations/bloc/invitation_event.dart';
+import 'package:home_organizer/features/invitations/bloc/invitation_state.dart';
+import 'package:home_organizer/features/invitations/data/invitations_repository.dart';
+import 'package:home_organizer/features/invitations/ui/views/invitation_view.dart';
+import 'package:home_organizer/features/invitations/ui/views/must_login_view.dart';
+import 'package:home_organizer/utils/loading/loading_screen.dart';
+
+class InvitationPage extends StatelessWidget {
+  const InvitationPage({super.key, required this.invitationId});
+  final String invitationId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Invitation')),
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthStateLoggedIn) {
+              final getIt = GetIt.instance;
+              return BlocProvider(
+                create:
+                    (context) => InvitationBloc(getIt<InvitationsRepository>())
+                      ..add(InvitationEventReceive(invitationId: invitationId)),
+                child: BlocConsumer<InvitationBloc, InvitationState>(
+                  builder: (context, state) {
+                    if (state is InvitationStateReceived) {
+                      return InvitationView(
+                        invitation: state.invitation,
+                        exception: state.exception,
+                      );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
+                  listener: (BuildContext context, InvitationState state) {
+                    if (state is InvitationStateReceived) {
+                      if (state.isLoading) {
+                        LoadingScreen().show(context: context);
+                      } else {
+                        LoadingScreen().hide();
+                      }
+                    }
+                    if (state is InvitationStateAccepted) {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: Text('Success'),
+                              content: Text('You accepted the invitation.'),
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.of(
+                                        context,
+                                      ).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                          builder: (context) => AuthPage(),
+                                        ),
+                                        (route) => false,
+                                      ),
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            ),
+                      );
+                    }
+                  },
+                ),
+              );
+            } else {
+              return MustLoginView();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}

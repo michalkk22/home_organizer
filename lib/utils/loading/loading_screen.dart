@@ -10,7 +10,8 @@ class LoadingScreen {
 
   LoadingScreenConrtoller? controller;
 
-  void show({required BuildContext context, required String text}) {
+  void show({required BuildContext context, String? text}) {
+    text ??= '';
     if (controller?.update(text) ?? false) {
       return;
     } else {

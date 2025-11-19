@@ -21,7 +21,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeStateNoHomes(isLoading: false));
         return;
       }
-      RepositoriesInjection().setupOtherRepositories(user.id, home.id);
+      RepositoriesInjection().setupHomeScopedRepositories(user.id, home.id);
       emit(HomeStateInHome(isLoading: false, user: user, home: home));
     });
 
