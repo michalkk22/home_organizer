@@ -29,8 +29,8 @@ class _MyAppState extends State<MyApp> {
   final deepLinks = DeepLinkHandler();
 
   @override
-  Future<void> initState() async {
-    await deepLinks.init(context);
+  void initState() {
+    deepLinks.init(context);
     super.initState();
   }
 
