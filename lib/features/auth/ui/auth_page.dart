@@ -12,6 +12,7 @@ import 'package:home_organizer/features/home/bloc/home_event.dart';
 import 'package:home_organizer/features/home/data/repositories/homes_repository.dart';
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
 import 'package:home_organizer/features/home/ui/home_page.dart';
+import 'package:home_organizer/features/invitations/data/invitations_repository.dart';
 import 'package:home_organizer/utils/loading/loading_screen.dart';
 
 class AuthPage extends StatelessWidget {
@@ -25,9 +26,11 @@ class AuthPage extends StatelessWidget {
           final getIt = GetIt.instance;
           return BlocProvider(
             create:
-                (context) =>
-                    HomeBloc(getIt<UsersRepository>(), getIt<HomesRepository>())
-                      ..add(HomeEventLoggedIn()),
+                (context) => HomeBloc(
+                  getIt<UsersRepository>(),
+                  getIt<HomesRepository>(),
+                  getIt<InvitationsRepository>(),
+                )..add(HomeEventLoggedIn()),
             child: HomePage(),
           );
         } else if (state is AuthStateLoggedOut) {

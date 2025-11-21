@@ -6,10 +6,14 @@ import 'package:home_organizer/features/home/data/models/user.dart';
 import 'package:home_organizer/features/home/data/repositories/homes_repository.dart';
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
 import 'package:home_organizer/core/injection/repositories_injection.dart';
+import 'package:home_organizer/features/invitations/data/invitations_repository.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc(UsersRepository users, HomesRepository homes)
-    : super(const HomeStateLoading()) {
+  HomeBloc(
+    UsersRepository users,
+    HomesRepository homes,
+    InvitationsRepository invitations,
+  ) : super(const HomeStateLoading()) {
     on<HomeEventLoggedIn>((event, emit) async {
       User? user = await users.user;
       if (user == null) {
@@ -45,6 +49,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         return;
       }
       add(HomeEventLoggedIn());
+    });
+
+    on<HomeEventInvite>((event, emit) async {
+      if (state is HomeStateInHome) {
+        final inHome = state as HomeStateInHome;
+        try {
+          emit(
+            HomeStateInHome(
+              isLoading: true,
+              user: inHome.user,
+              home: inHome.home,
+            ),
+          );
+          final invitationLink = await invitations.createInvitation();
+          emit(
+            HomeStateInHome(
+              isLoading: false,
+              user: inHome.user,
+              home: inHome.home,
+              invitationLink: invitationLink,
+            ),
+          );
+        } on Exception catch (e) {
+          emit(
+            HomeStateInHome(
+              isLoading: false,
+              user: inHome.user,
+              home: inHome.home,
+              exception: e,
+            ),
+          );
+        }
+      }
     });
   }
 }

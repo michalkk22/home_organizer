@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart' show immutable;
+import 'package:home_organizer/constants/deeplink_constants.dart';
 import 'package:home_organizer/constants/firebase_storage_constants.dart';
 
 @immutable
@@ -19,6 +20,8 @@ class Invitation {
     required this.senderName,
     required this.expiresAt,
   });
+
+  String get link => invitationDeepLink + id;
 
   factory Invitation.fromFirebase({
     required DocumentSnapshot<Map<String, dynamic>> snapshot,

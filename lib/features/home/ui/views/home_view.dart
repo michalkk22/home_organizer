@@ -4,6 +4,8 @@ import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/chat/ui/chat_page.dart';
 import 'package:home_organizer/features/expenses/ui/expenses_page.dart';
+import 'package:home_organizer/features/home/bloc/home_bloc.dart';
+import 'package:home_organizer/features/home/bloc/home_event.dart';
 import 'package:home_organizer/features/home/data/models/home.dart';
 
 class HomeView extends StatelessWidget {
@@ -27,10 +29,22 @@ class HomeView extends StatelessWidget {
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             leading: Icon(Icons.wheelchair_pickup),
             actions: [
-              IconButton(
-                onPressed:
-                    () => context.read<AuthBloc>().add(AuthEventLogOut()),
-                icon: Icon(Icons.logout),
+              PopupMenuButton(
+                itemBuilder:
+                    (context) => <PopupMenuEntry>[
+                      PopupMenuItem(
+                        onTap:
+                            () =>
+                                context.read<AuthBloc>().add(AuthEventLogOut()),
+                        child: Text('Logout'),
+                      ),
+                      PopupMenuItem(
+                        onTap: () {
+                          context.read<HomeBloc>().add(HomeEventInvite());
+                        },
+                        child: Text('Invite'),
+                      ),
+                    ],
               ),
             ],
             bottom: TabBar(

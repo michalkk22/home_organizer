@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_organizer/features/chat/bloc/chat_bloc.dart';
@@ -9,6 +10,8 @@ import 'package:home_organizer/features/home/bloc/home_state.dart';
 import 'package:home_organizer/features/home/ui/views/create_home_view.dart';
 import 'package:home_organizer/features/home/ui/views/home_view.dart';
 import 'package:home_organizer/features/home/ui/views/set_username_view.dart';
+import 'package:home_organizer/features/invitations/domain/invitations_repository_exception.dart';
+import 'package:home_organizer/utils/dialogs/error_dialog.dart';
 import 'package:home_organizer/utils/loading/loading_screen.dart';
 
 class HomePage extends StatelessWidget {
@@ -38,6 +41,49 @@ class HomePage extends StatelessWidget {
           LoadingScreen().show(context: context, text: '');
         } else {
           LoadingScreen().hide();
+        }
+
+        if (state is HomeStateInHome) {
+          if (state.exception != null) {
+            if (state.exception is HomeNotFoundInvitationsRepositoryException) {
+              showErrorDialog(context, 'You must select home first.');
+            } else {
+              showErrorDialog(context, "Couldn't find your invitation data");
+            }
+          }
+
+          if (state.invitationLink != null) {
+            final link = state.invitationLink!;
+            showDialog(
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    title: Text('Invitation link'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Send this link to peaple you want to invite!'),
+                        SizedBox(height: 20),
+                        SelectableText(link),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: link));
+                        },
+                        child: Text('Copy'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Got It'),
+                      ),
+                    ],
+                  ),
+            );
+          }
         }
       },
     );

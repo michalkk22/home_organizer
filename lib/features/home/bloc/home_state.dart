@@ -25,9 +25,13 @@ class HomeStateNoHomes extends HomeState {
 class HomeStateInHome extends HomeState {
   final User user;
   final Home home;
+  final String? invitationLink;
+  final Exception? exception;
   const HomeStateInHome({
     required super.isLoading,
     required this.user,
     required this.home,
+    this.invitationLink,
+    this.exception,
   });
 }

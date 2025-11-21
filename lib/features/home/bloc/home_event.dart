@@ -20,3 +20,7 @@ class HomeEventCreateHome extends HomeEvent {
 
   const HomeEventCreateHome({required this.homeName});
 }
+
+class HomeEventInvite extends HomeEvent {
+  const HomeEventInvite();
+}
