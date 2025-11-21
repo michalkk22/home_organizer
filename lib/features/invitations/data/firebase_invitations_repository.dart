@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:home_organizer/constants/deeplink_constants.dart';
 import 'package:home_organizer/constants/firebase_storage_constants.dart';
 import 'package:home_organizer/features/home/data/repositories/homes_repository.dart';
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
@@ -44,7 +45,7 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
 
       final id = docRef.id;
 
-      return 'https://homeorganizer.com/invitations/$id';
+      return invitationDeepLink + id;
     } catch (e) {
       throw CouldNotCreateInvitationsRepositoryException();
     }

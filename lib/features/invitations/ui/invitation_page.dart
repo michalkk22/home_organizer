@@ -41,36 +41,41 @@ class InvitationPage extends StatelessWidget {
                       return CircularProgressIndicator();
                     }
                   },
-                  listener: (BuildContext context, InvitationState state) {
+                  listener: (
+                    BuildContext context,
+                    InvitationState state,
+                  ) async {
                     if (state is InvitationStateReceived) {
                       if (state.isLoading) {
                         LoadingScreen().show(context: context);
                       } else {
                         LoadingScreen().hide();
                       }
-                    }
-                    if (state is InvitationStateAccepted) {
-                      showDialog(
-                        context: context,
+                    } else if (state is InvitationStateAccepted) {
+                      final savedContext = context;
+                      await showDialog(
+                        context: savedContext,
                         builder:
-                            (context) => AlertDialog(
+                            (_) => AlertDialog(
                               title: Text('Success'),
                               content: Text('You accepted the invitation.'),
                               actions: [
                                 TextButton(
                                   onPressed:
-                                      () => Navigator.of(
-                                        context,
-                                      ).pushAndRemoveUntil(
-                                        MaterialPageRoute(
-                                          builder: (context) => AuthPage(),
-                                        ),
-                                        (route) => false,
-                                      ),
+                                      () => Navigator.of(savedContext).pop(),
                                   child: Text('OK'),
                                 ),
                               ],
                             ),
+                      );
+                      Navigator.of(savedContext).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => AuthPage()),
+                        (route) => false,
+                      );
+                    } else if (state is InvitationStateRejected) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => AuthPage()),
+                        (route) => false,
                       );
                     }
                   },
