@@ -3,7 +3,7 @@ import 'package:home_organizer/features/auth/data/auth_provider.dart';
 import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/auth/bloc/auth_state.dart';
 import 'package:home_organizer/features/auth/data/auth_user.dart';
-import 'package:home_organizer/utils/injection/repositories_injection.dart';
+import 'package:home_organizer/core/injection/repositories_injection.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(AuthProvider provider)
