@@ -13,11 +13,12 @@ class InvitationView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+        spacing: 8,
         children: [
           SizedBox(height: 20),
           Text(
             invitation?.senderName ?? 'sender',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           Text(
             'invited you to home:',
@@ -27,7 +28,7 @@ class InvitationView extends StatelessWidget {
             invitation?.homeName ?? 'home',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          TextButton(
+          ElevatedButton(
             onPressed:
                 exception == null
                     ? () => context.read<InvitationBloc>().add(
@@ -36,7 +37,7 @@ class InvitationView extends StatelessWidget {
                     : null,
             child: Text('Accept'),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed:
                 () => context.read<InvitationBloc>().add(
                   InvitationEventAnswer(accept: false),

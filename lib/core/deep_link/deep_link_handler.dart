@@ -12,8 +12,10 @@ class DeepLinkHandler {
     _navKey = navKey;
 
     final initial = await links.getInitialLink();
+    print("getInitialLink result link: $initial");
     if (initial != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Handling initial link");
         _handle(initial);
       });
     }
@@ -22,6 +24,7 @@ class DeepLinkHandler {
   }
 
   void _handle(Uri uri) {
+    print("Handling link: $uri");
     final segments = uri.pathSegments;
 
     if (segments.length == 2 && segments[0] == invitationDeepLinkSegment) {

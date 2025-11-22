@@ -10,7 +10,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final navigatorKey = GlobalKey<NavigatorState>();
-  DeepLinkHandler().init(navigatorKey);
 
   runApp(
     BlocProvider<AuthBloc>(
@@ -21,9 +20,20 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.navigatorKey});
   final GlobalKey<NavigatorState> navigatorKey;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    DeepLinkHandler().init(widget.navigatorKey);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +44,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: AuthPage(),
-      navigatorKey: navigatorKey,
+      navigatorKey: widget.navigatorKey,
     );
   }
 }
