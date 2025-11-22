@@ -7,32 +7,23 @@ import 'package:home_organizer/features/auth/data/firebase_auth_provider.dart';
 import 'package:home_organizer/features/auth/ui/auth_page.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized;
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final navigatorKey = GlobalKey<NavigatorState>();
+  DeepLinkHandler().init(navigatorKey);
 
   runApp(
     BlocProvider<AuthBloc>(
       create:
           (_) => AuthBloc(FirebaseAuthProvider())..add(AuthEventInitialize()),
-      child: MyApp(),
+      child: MyApp(navigatorKey: navigatorKey),
     ),
   );
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  final deepLinks = DeepLinkHandler();
-
-  @override
-  void initState() {
-    deepLinks.init(context);
-    super.initState();
-  }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key, required this.navigatorKey});
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +34,7 @@ class _MyAppState extends State<MyApp> {
       ),
       debugShowCheckedModeBanner: false,
       home: AuthPage(),
+      navigatorKey: navigatorKey,
     );
   }
 }

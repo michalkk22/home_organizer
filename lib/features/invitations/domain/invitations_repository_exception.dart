@@ -13,3 +13,5 @@ class ExpiredInvitationsRepositoryException implements Exception {}
 class UsedUpInvitationsRepositoryException implements Exception {}
 
 class CouldNotAcceptInvitationsRepositoryException implements Exception {}
+
+class GenericInvitationsRepositoryException implements Exception {}

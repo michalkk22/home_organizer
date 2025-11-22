@@ -10,6 +10,7 @@ import 'package:home_organizer/features/invitations/bloc/invitation_state.dart';
 import 'package:home_organizer/features/invitations/data/invitations_repository.dart';
 import 'package:home_organizer/features/invitations/ui/views/invitation_view.dart';
 import 'package:home_organizer/features/invitations/ui/views/must_login_view.dart';
+import 'package:home_organizer/utils/dialogs/error_dialog.dart';
 import 'package:home_organizer/utils/loading/loading_screen.dart';
 
 class InvitationPage extends StatelessWidget {
@@ -37,19 +38,27 @@ class InvitationPage extends StatelessWidget {
                         invitation: state.invitation,
                         exception: state.exception,
                       );
-                    } else {
+                    } else if (state is InvitationStateWaiting) {
                       return CircularProgressIndicator();
+                    } else {
+                      return Container();
                     }
                   },
                   listener: (
                     BuildContext context,
                     InvitationState state,
                   ) async {
+                    if (state.isLoading) {
+                      LoadingScreen().show(context: context);
+                    } else {
+                      LoadingScreen().hide();
+                    }
                     if (state is InvitationStateReceived) {
-                      if (state.isLoading) {
-                        LoadingScreen().show(context: context);
-                      } else {
-                        LoadingScreen().hide();
+                      if (state.exception != null) {
+                        showErrorDialog(
+                          context,
+                          '${state.exception}, invitation: ${state.invitation}',
+                        );
                       }
                     } else if (state is InvitationStateAccepted) {
                       final savedContext = context;

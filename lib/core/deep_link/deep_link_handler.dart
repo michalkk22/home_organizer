@@ -2,14 +2,14 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:home_organizer/constants/deeplink_constants.dart';
 import 'package:home_organizer/core/deep_link/deep_link_exception.dart';
-import 'package:home_organizer/features/auth/ui/auth_page.dart';
+import 'package:home_organizer/features/invitations/ui/invitation_page.dart';
 
 class DeepLinkHandler {
   final links = AppLinks();
-  late BuildContext _context;
+  late GlobalKey<NavigatorState> _navKey;
 
-  Future<void> init(BuildContext context) async {
-    _context = context;
+  Future<void> init(GlobalKey<NavigatorState> navKey) async {
+    _navKey = navKey;
 
     final initial = await links.getInitialLink();
     if (initial != null) {
@@ -38,8 +38,8 @@ class DeepLinkHandler {
   }
 
   void _pushInvitation(String id) {
-    Navigator.of(_context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => AuthPage()),
+    _navKey.currentState!.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => InvitationPage(invitationId: id)),
       (route) => false,
     );
   }

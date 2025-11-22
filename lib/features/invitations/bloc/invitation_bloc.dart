@@ -8,7 +8,6 @@ class InvitationBloc extends Bloc<InvitationEvent, InvitationState> {
     : super(InvitationStateWaiting()) {
     on<InvitationEventReceive>((event, emit) async {
       try {
-        emit(InvitationStateReceived(isLoading: true));
         final invitation = await invitations.get(event.invitationId);
         emit(InvitationStateReceived(isLoading: false, invitation: invitation));
       } on Exception catch (e) {
@@ -27,7 +26,7 @@ class InvitationBloc extends Bloc<InvitationEvent, InvitationState> {
             ),
           );
           await invitations.accept(received.invitation!.id);
-          emit(InvitationStateAccepted());
+          emit(InvitationStateAccepted(isLoading: false));
         } on Exception catch (e) {
           emit(
             InvitationStateReceived(
@@ -38,7 +37,7 @@ class InvitationBloc extends Bloc<InvitationEvent, InvitationState> {
           );
         }
       } else {
-        emit(InvitationStateRejected());
+        emit(InvitationStateRejected(isLoading: false));
       }
     });
 

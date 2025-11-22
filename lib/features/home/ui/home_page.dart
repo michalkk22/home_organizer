@@ -50,6 +50,12 @@ class HomePage extends StatelessWidget {
           if (state.exception != null) {
             if (state.exception is HomeNotFoundInvitationsRepositoryException) {
               showErrorDialog(context, 'You must select home first.');
+            } else if (state.exception
+                is CouldNotCreateInvitationsRepositoryException) {
+              showErrorDialog(context, "Couldn't create your invitation");
+            } else if (state.exception
+                is GenericInvitationsRepositoryException) {
+              showErrorDialog(context, 'Unknown error');
             } else {
               showErrorDialog(context, "Couldn't find your invitation data");
             }

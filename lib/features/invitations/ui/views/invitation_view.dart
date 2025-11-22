@@ -11,42 +11,39 @@ class InvitationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Invitation')),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Text(
-              invitation?.senderName ?? 'sender',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Text(
-              'invited you to home:',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Text(
-              invitation?.homeName ?? 'home',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            TextButton(
-              onPressed:
-                  exception == null
-                      ? () => context.read<InvitationBloc>().add(
-                        InvitationEventAnswer(accept: true),
-                      )
-                      : null,
-              child: Text('Accept'),
-            ),
-            TextButton(
-              onPressed:
-                  () => context.read<InvitationBloc>().add(
-                    InvitationEventAnswer(accept: false),
-                  ),
-              child: Text('Back to login'),
-            ),
-          ],
-        ),
+    return Center(
+      child: Column(
+        children: [
+          SizedBox(height: 20),
+          Text(
+            invitation?.senderName ?? 'sender',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          Text(
+            'invited you to home:',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          Text(
+            invitation?.homeName ?? 'home',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          TextButton(
+            onPressed:
+                exception == null
+                    ? () => context.read<InvitationBloc>().add(
+                      InvitationEventAnswer(accept: true),
+                    )
+                    : null,
+            child: Text('Accept'),
+          ),
+          TextButton(
+            onPressed:
+                () => context.read<InvitationBloc>().add(
+                  InvitationEventAnswer(accept: false),
+                ),
+            child: Text('Back to login'),
+          ),
+        ],
       ),
     );
   }

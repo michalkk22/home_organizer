@@ -39,22 +39,24 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
         throw ExpiredInvitationsRepositoryException();
       }
 
-      // check if is not already used by this user
-      final usedBy =
-          data[InvitationsCollectionNames.usedByFieldName] as List<String>;
+      // check if already used by this user
+      bool alreadyUsed = false;
+      final usedBy = data[InvitationsCollectionNames.usedByFieldName] as List;
       if (usedBy.isNotEmpty && usedBy.contains(_userId)) {
-        throw UsedUpInvitationsRepositoryException();
+        alreadyUsed = true;
       }
 
       // don't use up invitation wihtout succeding adding user to home
       final batch = _db.batch();
 
       // set as used by this user to give him permissions for adding himself to home
-      batch.update(invitationRef, {
-        InvitationsCollectionNames.usedByFieldName: FieldValue.arrayUnion([
-          _userId,
-        ]),
-      });
+      if (!alreadyUsed) {
+        batch.update(invitationRef, {
+          InvitationsCollectionNames.usedByFieldName: FieldValue.arrayUnion([
+            _userId,
+          ]),
+        });
+      }
 
       // add to home
       final homeId = data[InvitationsCollectionNames.homeIdFieldName];
@@ -92,13 +94,12 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
               isEqualTo: _userId,
             )
             .get();
-    // if there are any invitations, return the first not used up yet
+    // if there are any invitations, return the first not used up or expired yet
     if (snapshot.docs.isNotEmpty) {
       for (var inv in snapshot.docs) {
         final data = inv.data();
-        final usedBy =
-            data[InvitationsCollectionNames.usedByFieldName] as List<String>;
-        if (usedBy.length <= 5) {
+        final usedBy = data[InvitationsCollectionNames.usedByFieldName] as List;
+        if (!_isExpired(data) && usedBy.length <= 5) {
           return snapshot.docs.first.id;
         }
       }
@@ -131,16 +132,14 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
         throw ExpiredInvitationsRepositoryException();
       }
 
-      final homeName = await _homesRepository.getName(
-        data[InvitationsCollectionNames.homeIdFieldName],
-      );
+      final homeId = data[InvitationsCollectionNames.homeIdFieldName];
+      final homeName = await _homesRepository.getName(homeId);
       if (homeName == null) {
         throw HomeNotFoundInvitationsRepositoryException();
       }
 
-      final sender = await _usersRepository.getById(
-        data[InvitationsCollectionNames.createdByFieldName],
-      );
+      final senderId = data[InvitationsCollectionNames.createdByFieldName];
+      final sender = await _usersRepository.getById(senderId);
       if (sender == null || sender.name == null) {
         throw SenderNotFoundInvitationsRepositoryException();
       }
@@ -151,14 +150,14 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
         senderName: sender.name!,
       );
     } catch (e) {
-      throw NotFoundInvitationsRepositoryException();
+      throw GenericInvitationsRepositoryException();
     }
   }
 
   bool _isExpired(Map<String, dynamic> data) {
     final timestamp =
-        data[InvitationsCollectionNames.expiresAtFieldName] as DateTime;
-    if (timestamp.isAfter(DateTime.now())) {
+        data[InvitationsCollectionNames.expiresAtFieldName] as Timestamp;
+    if (timestamp.toDate().isAfter(DateTime.now())) {
       return false;
     }
     return true;
