@@ -10,7 +10,6 @@ class Invitation {
   final String homeName;
   final String senderId;
   final String senderName;
-  final DateTime expiresAt;
 
   const Invitation({
     required this.id,
@@ -18,7 +17,6 @@ class Invitation {
     required this.homeName,
     required this.senderId,
     required this.senderName,
-    required this.expiresAt,
   });
 
   String get link => invitationDeepLink + id;
@@ -35,7 +33,6 @@ class Invitation {
       homeName: homeName,
       senderId: data?[InvitationsCollectionNames.createdByFieldName],
       senderName: senderName,
-      expiresAt: data?[InvitationsCollectionNames.expiresAtFieldName],
     );
   }
 }

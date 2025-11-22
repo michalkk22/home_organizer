@@ -26,4 +26,5 @@ abstract class InvitationsCollectionNames {
   static const String homeIdFieldName = 'homeId';
   static const String createdByFieldName = 'createbBy';
   static const String expiresAtFieldName = 'expiresAt';
+  static const String usedByFieldName = 'usedBy';
 }

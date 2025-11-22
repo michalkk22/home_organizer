@@ -29,7 +29,7 @@ class FirebaseHomesRepository implements HomesRepository {
     try {
       final batch = _db.batch();
       final homeRef = _db.collection(HomesCollectionNames.collectionName).doc();
-      final inhabitantsRef = homeRef
+      final permissionsRef = homeRef
           .collection(PermissionsCollectionNames.collectionName)
           .doc(_userId);
 
@@ -37,7 +37,7 @@ class FirebaseHomesRepository implements HomesRepository {
         HomesCollectionNames.nameFieldName: name,
         HomesCollectionNames.membersFieldName: [_userId],
       });
-      batch.set(inhabitantsRef, {
+      batch.set(permissionsRef, {
         PermissionsCollectionNames.isOwnerFieldName: true,
       });
 
@@ -103,6 +103,31 @@ class FirebaseHomesRepository implements HomesRepository {
       return homeName;
     } catch (e) {
       throw CouldNotRetrieveDataHomesRepositoryException();
+    }
+  }
+
+  @override
+  Future<void> addMember(String homeId, String userId, WriteBatch batch) async {
+    try {
+      final homeRef = _db
+          .collection(HomesCollectionNames.collectionName)
+          .doc(homeId);
+
+      final permissionsRef = homeRef
+          .collection(PermissionsCollectionNames.collectionName)
+          .doc(userId);
+
+      // add user to members
+      batch.update(homeRef, {
+        HomesCollectionNames.membersFieldName: FieldValue.arrayUnion([userId]),
+      });
+
+      // set permissions
+      batch.set(permissionsRef, {
+        PermissionsCollectionNames.isOwnerFieldName: false,
+      });
+    } catch (_) {
+      throw CouldNotAddMemberHomesRepositoryException();
     }
   }
 }

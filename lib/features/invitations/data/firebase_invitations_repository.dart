@@ -18,14 +18,53 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
     this._homesRepository,
   );
 
+  final _db = FirebaseFirestore.instance;
   final _invitations = FirebaseFirestore.instance.collection(
     InvitationsCollectionNames.collectionName,
   );
 
   @override
-  Future<void> accept(String id) {
-    // TODO: implement accept
-    throw UnimplementedError();
+  Future<void> accept(String id) async {
+    try {
+      final invitationRef = _invitations.doc(id);
+      final doc = await invitationRef.get();
+      final data = doc.data();
+
+      if (data == null) {
+        throw NotFoundInvitationsRepositoryException();
+      }
+
+      // check if is not expired
+      if (_isExpired(data)) {
+        throw ExpiredInvitationsRepositoryException();
+      }
+
+      // check if is not already used by this user
+      final usedBy =
+          data[InvitationsCollectionNames.usedByFieldName] as List<String>;
+      if (usedBy.isNotEmpty && usedBy.contains(_userId)) {
+        throw UsedUpInvitationsRepositoryException();
+      }
+
+      // don't use up invitation wihtout succeding adding user to home
+      final batch = _db.batch();
+
+      // set as used by this user to give him permissions for adding himself to home
+      batch.update(invitationRef, {
+        InvitationsCollectionNames.usedByFieldName: FieldValue.arrayUnion([
+          _userId,
+        ]),
+      });
+
+      // add to home
+      final homeId = data[InvitationsCollectionNames.homeIdFieldName];
+      await _homesRepository.addMember(homeId, _userId, batch);
+
+      // commit changes
+      await batch.commit();
+    } catch (_) {
+      throw CouldNotAcceptInvitationsRepositoryException();
+    }
   }
 
   @override
@@ -41,6 +80,7 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
         InvitationsCollectionNames.expiresAtFieldName: DateTime.timestamp().add(
           Duration(days: 7),
         ),
+        InvitationsCollectionNames.usedByFieldName: [],
       });
 
       final id = docRef.id;
@@ -58,6 +98,10 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
       final data = doc.data();
       if (data == null) {
         throw NotFoundInvitationsRepositoryException();
+      }
+
+      if (_isExpired(data)) {
+        throw ExpiredInvitationsRepositoryException();
       }
 
       final homeName = await _homesRepository.getName(
@@ -82,5 +126,14 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
     } catch (e) {
       throw NotFoundInvitationsRepositoryException();
     }
+  }
+
+  bool _isExpired(Map<String, dynamic> data) {
+    final timestamp =
+        data[InvitationsCollectionNames.expiresAtFieldName] as DateTime;
+    if (timestamp.isAfter(DateTime.now())) {
+      return false;
+    }
+    return true;
   }
 }
