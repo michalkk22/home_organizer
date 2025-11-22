@@ -27,7 +27,10 @@ class HomePage extends StatelessWidget {
             create:
                 (context) =>
                     ChatBloc(getIt<ChatRepository>())..add(ChatEventLoad()),
-            child: HomeView(home: state.home, user: state.user),
+            child: HomeView(
+              home: state.home,
+              userPermissions: state.home.members[state.user]!,
+            ),
           );
         } else if (state is HomeStateNeedUserName) {
           return SetUsernameView();

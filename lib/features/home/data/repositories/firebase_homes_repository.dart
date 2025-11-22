@@ -68,23 +68,23 @@ class FirebaseHomesRepository implements HomesRepository {
       return null;
     }
     final homeSnapshot = homes.docs.first;
-    final userIds = List<String>.from(
+    final memberIds = List<String>.from(
       homeSnapshot.data()[HomesCollectionNames.membersFieldName] ?? [],
     );
 
-    if (userIds.isEmpty) {
+    if (memberIds.isEmpty) {
       throw CouldNotRetrieveDataHomesRepositoryException();
     }
 
-    Map<User, Permissions?> members = {};
-    for (var id in userIds) {
-      final user = await _usersRepository.getById(id);
-      if (user != null) {
+    Map<User, Permissions> members = {};
+    for (var id in memberIds) {
+      final member = await _usersRepository.getById(id);
+      if (member != null) {
         final permissions = await _permissionsRepository.get(
           homeId: homeSnapshot.id,
-          userId: _userId,
+          userId: id,
         );
-        members.putIfAbsent(user, () => permissions);
+        members.putIfAbsent(member, () => permissions);
       }
     }
 

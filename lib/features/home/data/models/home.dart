@@ -8,11 +8,11 @@ import 'package:home_organizer/features/home/data/models/user.dart';
 class Home {
   final String id;
   final String name;
-  final Map<User, Permissions?> members;
+  final Map<User, Permissions> members;
   const Home({required this.id, required this.name, required this.members});
 
   factory Home.fromFirestore({
-    required Map<User, Permissions?> members,
+    required Map<User, Permissions> members,
     required DocumentSnapshot<Map<String, dynamic>> snapshot,
   }) {
     final data = snapshot.data();

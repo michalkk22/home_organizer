@@ -6,15 +6,14 @@ import 'package:home_organizer/features/home/data/models/permissions.dart';
 class User {
   final String id;
   final String? name;
-  final Permissions? permissions;
-  const User({required this.id, required this.name, this.permissions});
+  const User({required this.id, required this.name});
 
   factory User.fromFirestore({
     required DocumentSnapshot<Map<String, dynamic>> snapshot,
     Permissions? permissions,
   }) {
     final data = snapshot.data();
-    return User(id: snapshot.id, name: data?['name'], permissions: permissions);
+    return User(id: snapshot.id, name: data?['name']);
   }
 
   @override
