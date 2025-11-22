@@ -68,27 +68,46 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
   }
 
   @override
-  Future<String> createInvitation() async {
+  Future<String> createOrGet() async {
     try {
       final home = await _homesRepository.home;
       if (home == null) {
         throw NotInHomeInvitationsRepositoryException();
       }
-      final docRef = await _invitations.add({
-        InvitationsCollectionNames.homeIdFieldName: home.id,
-        InvitationsCollectionNames.createdByFieldName: _userId,
-        InvitationsCollectionNames.expiresAtFieldName: DateTime.timestamp().add(
-          Duration(days: 7),
-        ),
-        InvitationsCollectionNames.usedByFieldName: [],
-      });
 
-      final id = docRef.id;
+      var id = await _findCreated(home.id);
+      id ??= await _create(home.id);
 
       return invitationDeepLink + id;
     } catch (e) {
       throw CouldNotCreateInvitationsRepositoryException();
     }
+  }
+
+  Future<String?> _findCreated(String homeId) async {
+    final snapshot =
+        await _invitations
+            .where(
+              InvitationsCollectionNames.createdByFieldName,
+              isEqualTo: _userId,
+            )
+            .get();
+    if (snapshot.docs.isNotEmpty) {
+      return snapshot.docs.first.id;
+    }
+    return null;
+  }
+
+  Future<String> _create(String homeId) async {
+    final docRef = await _invitations.add({
+      InvitationsCollectionNames.homeIdFieldName: homeId,
+      InvitationsCollectionNames.createdByFieldName: _userId,
+      InvitationsCollectionNames.expiresAtFieldName: DateTime.timestamp().add(
+        Duration(days: 7),
+      ),
+      InvitationsCollectionNames.usedByFieldName: [],
+    });
+    return docRef.id;
   }
 
   @override

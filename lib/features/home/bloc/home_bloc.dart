@@ -62,7 +62,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               home: inHome.home,
             ),
           );
-          final invitationLink = await invitations.createInvitation();
+          final invitationLink = await invitations.createOrGet();
           emit(
             HomeStateInHome(
               isLoading: false,
