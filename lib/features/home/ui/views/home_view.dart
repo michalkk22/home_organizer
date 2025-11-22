@@ -7,10 +7,12 @@ import 'package:home_organizer/features/expenses/ui/expenses_page.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_event.dart';
 import 'package:home_organizer/features/home/data/models/home.dart';
+import 'package:home_organizer/features/home/data/models/user.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key, required this.home});
+  const HomeView({super.key, required this.home, required this.user});
   final Home home;
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +40,13 @@ class HomeView extends StatelessWidget {
                                 context.read<AuthBloc>().add(AuthEventLogOut()),
                         child: Text('Logout'),
                       ),
-                      PopupMenuItem(
-                        onTap: () {
-                          context.read<HomeBloc>().add(HomeEventInvite());
-                        },
-                        child: Text('Invite'),
-                      ),
+                      if (user.permissions?.isOwner ?? false)
+                        PopupMenuItem(
+                          onTap: () {
+                            context.read<HomeBloc>().add(HomeEventInvite());
+                          },
+                          child: Text('Invite'),
+                        ),
                     ],
               ),
             ],
