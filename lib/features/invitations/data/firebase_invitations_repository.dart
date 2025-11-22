@@ -92,8 +92,16 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
               isEqualTo: _userId,
             )
             .get();
+    // if there are any invitations, return the first not used up yet
     if (snapshot.docs.isNotEmpty) {
-      return snapshot.docs.first.id;
+      for (var inv in snapshot.docs) {
+        final data = inv.data();
+        final usedBy =
+            data[InvitationsCollectionNames.usedByFieldName] as List<String>;
+        if (usedBy.length <= 5) {
+          return snapshot.docs.first.id;
+        }
+      }
     }
     return null;
   }
