@@ -28,3 +28,18 @@ abstract class InvitationsCollectionNames {
   static const String expiresAtFieldName = 'expiresAt';
   static const String usedByFieldName = 'usedBy';
 }
+
+abstract class ExpensesCollectionNames {
+  static const collectionName = 'expenses';
+  static const userIdFieldName = 'userId';
+  static const titleFieldName = 'title';
+  static const amountFieldName = 'amount';
+  static const dateFieldName = 'date';
+  static const categoryIdFieldName = 'category';
+}
+
+abstract class ExpenditureCategoriesCollectionNames {
+  static const collectionName = 'expenditureCategories';
+  static const defaultCollectionName = 'defaultExpenditureCategories';
+  static const nameFieldName = 'name';
+}
