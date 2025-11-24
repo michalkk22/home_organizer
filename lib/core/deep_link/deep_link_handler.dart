@@ -12,31 +12,30 @@ class DeepLinkHandler {
     _navKey = navKey;
 
     final initial = await links.getInitialLink();
-    print("getInitialLink result link: $initial");
     if (initial != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        print("Handling initial link");
-        _handle(initial);
-      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _handle(initial));
     }
 
     links.uriLinkStream.listen((uri) => _handle(uri));
   }
 
   void _handle(Uri uri) {
-    print("Handling link: $uri");
-    final segments = uri.pathSegments;
+    try {
+      final segments = uri.pathSegments;
 
-    if (segments.length == 2 && segments[0] == invitationDeepLinkSegment) {
-      final id = uri.pathSegments[1];
+      if (segments.length == 2 && segments[0] == invitationDeepLinkSegment) {
+        final id = uri.pathSegments[1];
 
-      if (id.isEmpty) {
-        throw InvalidInvitationDeepLinkException();
+        if (id.isEmpty) {
+          throw InvalidInvitationDeepLinkException();
+        }
+
+        _pushInvitation(id);
+      } else {
+        throw UnknownPathDeepLinkException();
       }
-
-      _pushInvitation(id);
-    } else {
-      throw UnknownPathDeepLinkException();
+    } catch (e) {
+      // bad link
     }
   }
 
