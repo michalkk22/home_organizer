@@ -37,10 +37,18 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple);
+    final textTheme = TextTheme();
+
     return MaterialApp(
       title: 'Home Organizer',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: colorScheme,
+        textTheme: textTheme,
+        appBarTheme: AppBarTheme(
+          backgroundColor: colorScheme.inversePrimary,
+          titleTextStyle: textTheme.titleLarge,
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: AuthPage(),

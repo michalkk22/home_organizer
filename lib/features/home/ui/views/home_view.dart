@@ -35,11 +35,7 @@ class HomeView extends StatelessWidget {
         onPanDown: (_) => FocusScope.of(context).unfocus(),
         child: Scaffold(
           appBar: AppBar(
-            title: Text(
-              home.name,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(home.name),
             leading: Icon(Icons.wheelchair_pickup),
             actions: [
               PopupMenuButton(
