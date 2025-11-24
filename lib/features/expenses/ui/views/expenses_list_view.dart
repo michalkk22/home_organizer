@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure.dart';
+import 'package:home_organizer/features/expenses/ui/views/expenditure_details_view.dart';
 
 class ExpensesListView extends StatelessWidget {
   const ExpensesListView({super.key, required this.expenses});
@@ -35,6 +36,13 @@ class ExpensesListView extends StatelessWidget {
           Text('${expenditure.category?.name}'),
         ],
       ),
+      onTap:
+          () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder:
+                  (context) => ExpenditureDetailsView(expenditure: expenditure),
+            ),
+          ),
     );
   }
 }
