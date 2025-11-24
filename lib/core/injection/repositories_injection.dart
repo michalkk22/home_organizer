@@ -43,7 +43,11 @@ class RepositoriesInjection {
       () => expenditureCategoriesRepository,
     );
     getIt.registerLazySingleton<ExpensesRepository>(
-      () => FirebaseExpensesRepository(homeId, expenditureCategoriesRepository),
+      () => FirebaseExpensesRepository(
+        homeId,
+        expenditureCategoriesRepository,
+        getIt<UsersRepository>(),
+      ),
     );
   }
 
