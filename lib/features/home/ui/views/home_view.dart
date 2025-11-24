@@ -18,10 +18,17 @@ class HomeView extends StatelessWidget {
   final Home home;
   final Permissions userPermissions;
 
+  static const tabIcons = [
+    Tab(icon: Icon(Icons.message)),
+    Tab(icon: Icon(Icons.wallet)),
+  ];
+
+  static const tabs = [ChatPage(), ExpensesPage()];
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: tabs.length,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => FocusScope.of(context).unfocus(),
@@ -54,14 +61,9 @@ class HomeView extends StatelessWidget {
                     ],
               ),
             ],
-            bottom: TabBar(
-              tabs: [
-                Tab(icon: Icon(Icons.message)),
-                Tab(icon: Icon(Icons.wallet)),
-              ],
-            ),
+            bottom: TabBar(tabs: tabIcons),
           ),
-          body: TabBarView(children: [ChatPage(), ExpensesPage()]),
+          body: TabBarView(children: tabs),
         ),
       ),
     );
