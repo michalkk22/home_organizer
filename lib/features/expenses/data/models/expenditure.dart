@@ -7,6 +7,7 @@ import 'package:home_organizer/features/expenses/data/models/expenditure_categor
 class Expenditure {
   final String? id;
   final String userId;
+  final String? userName;
   final String title;
   final double amount;
   final DateTime date;
@@ -15,6 +16,7 @@ class Expenditure {
   const Expenditure({
     this.id,
     required this.userId,
+    this.userName,
     required this.title,
     required this.amount,
     required this.date,
@@ -23,12 +25,14 @@ class Expenditure {
 
   factory Expenditure.fromFirebase({
     required DocumentSnapshot<Map<String, dynamic>> snapshot,
+    String? userName,
     required ExpenditureCategory? category,
   }) {
     final data = snapshot.data();
     return Expenditure(
       id: snapshot.id,
       userId: data?[ExpensesCollectionNames.userIdFieldName],
+      userName: userName,
       title: data?[ExpensesCollectionNames.titleFieldName],
       amount: data?[ExpensesCollectionNames.amountFieldName],
       date: data?[ExpensesCollectionNames.dateFieldName],
