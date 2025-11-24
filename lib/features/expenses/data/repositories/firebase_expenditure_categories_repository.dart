@@ -85,6 +85,9 @@ class FirebaseExpenditureCategoriesRepository
   @override
   Future<void> update(ExpenditureCategory category) async {
     try {
+      if (category.id == null) {
+        throw MissingIdExpenditureCategoriesRepositoryException();
+      }
       final doc = _categories.doc(category.id);
       await doc.update({
         ExpenditureCategoriesCollectionNames.nameFieldName: category.name,
@@ -97,6 +100,9 @@ class FirebaseExpenditureCategoriesRepository
   @override
   Future<void> delete(ExpenditureCategory category) async {
     try {
+      if (category.id == null) {
+        throw MissingIdExpenditureCategoriesRepositoryException();
+      }
       final doc = _categories.doc(category.id);
       await doc.delete();
     } catch (e) {

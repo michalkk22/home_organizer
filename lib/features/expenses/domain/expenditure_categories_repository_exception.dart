@@ -11,3 +11,5 @@ class CouldNotCopyDefaultsExpenditureCategoriesRepositoryException
 
 class CouldNotDeleteExpenditureCategoriesRepositoryException
     implements Exception {}
+
+class MissingIdExpenditureCategoriesRepositoryException implements Exception {}

@@ -23,7 +23,7 @@ class Expenditure {
 
   factory Expenditure.fromFirebase({
     required DocumentSnapshot<Map<String, dynamic>> snapshot,
-    ExpenditureCategory? category,
+    required ExpenditureCategory? category,
   }) {
     final data = snapshot.data();
     return Expenditure(

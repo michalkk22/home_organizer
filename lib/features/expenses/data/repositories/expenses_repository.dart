@@ -4,5 +4,6 @@ abstract class ExpensesRepository {
   Future<Expenditure> get(String id);
   Future<Iterable<Expenditure>> getAll();
   Future<Expenditure> add(Expenditure expenditure);
-  Future<bool> update(Expenditure expenditure);
+  Future<void> update(Expenditure expenditure);
+  Future<void> delete(Expenditure expenditure);
 }
