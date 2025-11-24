@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:home_organizer/constants/firebase_storage_constants.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure_category.dart';
 import 'package:home_organizer/features/expenses/data/repositories/expenditure_categories_repository.dart';
-import 'package:home_organizer/features/expenses/domain/expenses_repository_exception.dart';
+import 'package:home_organizer/features/expenses/domain/expenditure_categories_repository_exception.dart';
 
 class FirebaseExpenditureCategoriesRepository
     implements ExpenditureCategoriesRepository {
@@ -17,14 +17,14 @@ class FirebaseExpenditureCategoriesRepository
       .collection(ExpenditureCategoriesCollectionNames.collectionName);
 
   @override
-  Future<ExpenditureCategory> add(String name) async {
+  Future<ExpenditureCategory> add(ExpenditureCategory category) async {
     try {
-      final category = await _categories.add({
-        ExpenditureCategoriesCollectionNames.nameFieldName: name,
+      final doc = await _categories.add({
+        ExpenditureCategoriesCollectionNames.nameFieldName: category.name,
       });
-      return get(category.id);
+      return get(doc.id);
     } catch (e) {
-      throw GenericExpensesRepositoryException();
+      throw GenericExpenditureCategoriesRepositoryException();
     }
   }
 
@@ -43,7 +43,7 @@ class FirebaseExpenditureCategoriesRepository
 
       await batch.commit();
     } catch (e) {
-      throw GenericExpensesRepositoryException();
+      throw CouldNotCopyDefaultsExpenditureCategoriesRepositoryException();
     }
   }
 
@@ -52,11 +52,11 @@ class FirebaseExpenditureCategoriesRepository
     try {
       final doc = await _categories.doc(id).get();
       if (doc.data() == null) {
-        throw CouldNotFindExpensesRepositoryException();
+        throw CouldNotFindExpenditureCategoriesRepositoryException();
       }
       return ExpenditureCategory.fromFirebase(snapshot: doc);
     } catch (e) {
-      throw GenericExpensesRepositoryException();
+      throw GenericExpenditureCategoriesRepositoryException();
     }
   }
 
@@ -78,7 +78,7 @@ class FirebaseExpenditureCategoriesRepository
 
       return categories;
     } catch (e) {
-      throw GenericExpensesRepositoryException();
+      throw GenericExpenditureCategoriesRepositoryException();
     }
   }
 
@@ -90,7 +90,17 @@ class FirebaseExpenditureCategoriesRepository
         ExpenditureCategoriesCollectionNames.nameFieldName: category.name,
       });
     } catch (e) {
-      throw CouldNotUpdateExpensesRepositoryException();
+      throw CouldNotUpdateExpenditureCategoriesRepositoryException();
+    }
+  }
+
+  @override
+  Future<void> delete(ExpenditureCategory category) async {
+    try {
+      final doc = _categories.doc(category.id);
+      await doc.delete();
+    } catch (e) {
+      throw CouldNotDeleteExpenditureCategoriesRepositoryException();
     }
   }
 }

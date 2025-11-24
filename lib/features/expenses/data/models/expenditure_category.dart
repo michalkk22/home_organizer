@@ -4,10 +4,10 @@ import 'package:home_organizer/constants/firebase_storage_constants.dart';
 
 @immutable
 class ExpenditureCategory {
-  final String id;
+  final String? id;
   final String name;
 
-  const ExpenditureCategory({required this.id, required this.name});
+  const ExpenditureCategory({this.id, required this.name});
 
   factory ExpenditureCategory.fromFirebase({
     required DocumentSnapshot<Map<String, dynamic>> snapshot,
