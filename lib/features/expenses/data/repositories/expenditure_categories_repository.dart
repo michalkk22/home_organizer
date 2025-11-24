@@ -2,7 +2,7 @@ import 'package:home_organizer/features/expenses/data/models/expenditure_categor
 
 abstract class ExpenditureCategoriesRepository {
   Future<ExpenditureCategory> get(String id);
-  Future<Iterable<ExpenditureCategory>> getAll();
+  Stream<Iterable<ExpenditureCategory>> getCategories();
   Future<ExpenditureCategory> add(ExpenditureCategory category);
   Future<void> update(ExpenditureCategory category);
   Future<void> delete(ExpenditureCategory category);

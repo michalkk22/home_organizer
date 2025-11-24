@@ -6,5 +6,7 @@ extension Formats on DateTime {
     return '$hour:$minute';
   }
 
-  String get dateTimeFormat => '$year.$month.$day $dayTimeFormat';
+  String get dateTimeFormat => '$dateFormat $dayTimeFormat';
+
+  String get dateFormat => '$year.$month.$day';
 }

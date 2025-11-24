@@ -5,6 +5,10 @@ import 'package:get_it/get_it.dart';
 import 'package:home_organizer/features/chat/bloc/chat_bloc.dart';
 import 'package:home_organizer/features/chat/bloc/chat_event.dart';
 import 'package:home_organizer/features/chat/data/chat_repository.dart';
+import 'package:home_organizer/features/expenses/bloc/expenses_bloc.dart';
+import 'package:home_organizer/features/expenses/bloc/expenses_event.dart';
+import 'package:home_organizer/features/expenses/data/repositories/expenditure_categories_repository.dart';
+import 'package:home_organizer/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_state.dart';
 import 'package:home_organizer/features/home/ui/views/create_home_view.dart';
@@ -23,10 +27,21 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         if (state is HomeStateInHome) {
           final getIt = GetIt.instance;
-          return BlocProvider(
-            create:
-                (context) =>
-                    ChatBloc(getIt<ChatRepository>())..add(ChatEventLoad()),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create:
+                    (context) =>
+                        ChatBloc(getIt<ChatRepository>())..add(ChatEventLoad()),
+              ),
+              BlocProvider(
+                create:
+                    (context) => ExpensesBloc(
+                      getIt<ExpensesRepository>(),
+                      getIt<ExpenditureCategoriesRepository>(),
+                    )..add(ExpensesEventLoad()),
+              ),
+            ],
             child: HomeView(
               home: state.home,
               userPermissions: state.home.members[state.user]!,

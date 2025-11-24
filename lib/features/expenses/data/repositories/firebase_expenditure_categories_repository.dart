@@ -61,10 +61,8 @@ class FirebaseExpenditureCategoriesRepository
   }
 
   @override
-  Future<Iterable<ExpenditureCategory>> getAll() async {
-    try {
-      final snapshot = await _categories.get();
-
+  Stream<Iterable<ExpenditureCategory>> getCategories() {
+    return _categories.snapshots().asyncMap((snapshot) async {
       List<ExpenditureCategory> categories = [];
       for (var doc in snapshot.docs) {
         final data = doc.data();
@@ -75,11 +73,8 @@ class FirebaseExpenditureCategoriesRepository
           ),
         );
       }
-
       return categories;
-    } catch (e) {
-      throw GenericExpenditureCategoriesRepositoryException();
-    }
+    });
   }
 
   @override

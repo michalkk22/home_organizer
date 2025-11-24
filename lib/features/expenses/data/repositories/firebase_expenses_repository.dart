@@ -8,11 +8,13 @@ import 'package:home_organizer/features/expenses/domain/expenses_repository_exce
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
 
 class FirebaseExpensesRepository implements ExpensesRepository {
+  final String _userId;
   final String _homeId;
   final ExpenditureCategoriesRepository _categoriesRepository;
   final UsersRepository _usersRepository;
 
   FirebaseExpensesRepository(
+    this._userId,
     this._homeId,
     this._categoriesRepository,
     this._usersRepository,
@@ -27,7 +29,7 @@ class FirebaseExpensesRepository implements ExpensesRepository {
   Future<Expenditure> add(Expenditure expenditure) async {
     try {
       final doc = await _expenses.add({
-        ExpensesCollectionNames.userIdFieldName: expenditure.userName,
+        ExpensesCollectionNames.userIdFieldName: expenditure.userId ?? _userId,
         ExpensesCollectionNames.titleFieldName: expenditure.title,
         ExpensesCollectionNames.amountFieldName: expenditure.amount,
         ExpensesCollectionNames.dateFieldName: expenditure.date,

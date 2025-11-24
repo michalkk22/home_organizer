@@ -6,7 +6,7 @@ import 'package:home_organizer/features/expenses/data/models/expenditure_categor
 @immutable
 class Expenditure {
   final String? id;
-  final String userId;
+  final String? userId;
   final String? userName;
   final String title;
   final double amount;
@@ -14,13 +14,13 @@ class Expenditure {
   final ExpenditureCategory? category;
 
   const Expenditure({
-    this.id,
+    required this.id,
     required this.userId,
-    this.userName,
+    required this.userName,
     required this.title,
     required this.amount,
     required this.date,
-    this.category,
+    required this.category,
   });
 
   factory Expenditure.fromFirebase({

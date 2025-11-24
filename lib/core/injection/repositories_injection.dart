@@ -44,6 +44,7 @@ class RepositoriesInjection {
     );
     getIt.registerLazySingleton<ExpensesRepository>(
       () => FirebaseExpensesRepository(
+        userId,
         homeId,
         expenditureCategoriesRepository,
         getIt<UsersRepository>(),
