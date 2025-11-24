@@ -62,28 +62,28 @@ class FirebaseExpensesRepository implements ExpensesRepository {
   }
 
   @override
-  Future<Iterable<Expenditure>> getAll() async {
-    try {
-      final snapshot = await _expenses.get();
+  Stream<Iterable<Expenditure>> getExpenses() {
+    return _expenses
+        .orderBy(ExpensesCollectionNames.dateFieldName, descending: true)
+        .snapshots()
+        .asyncMap((snapshot) async {
+          List<Expenditure> expenses = [];
 
-      List<Expenditure> expenses = [];
-      for (var doc in snapshot.docs) {
-        final data = doc.data();
-        final category = await _getCategory(data);
-        final userName = await _getUserName(data);
-        expenses.add(
-          Expenditure.fromFirebase(
-            snapshot: doc,
-            category: category,
-            userName: userName,
-          ),
-        );
-      }
+          for (var doc in snapshot.docs) {
+            final data = doc.data();
+            final category = await _getCategory(data);
+            final userName = await _getUserName(data);
 
-      return expenses;
-    } catch (e) {
-      throw GenericExpensesRepositoryException();
-    }
+            expenses.add(
+              Expenditure.fromFirebase(
+                snapshot: doc,
+                category: category,
+                userName: userName,
+              ),
+            );
+          }
+          return expenses;
+        });
   }
 
   @override
