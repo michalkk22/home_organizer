@@ -42,7 +42,6 @@ class ExpensesListView extends StatelessWidget {
                           value: context.read<ExpensesBloc>(),
                           child: CreateUpdateExpenditureView(
                             action: ExpensesAction.add,
-                            categories: categories,
                           ),
                         ),
                   ),
@@ -91,7 +90,14 @@ class ExpensesListView extends StatelessWidget {
           () => Navigator.of(context).push(
             MaterialPageRoute(
               builder:
-                  (context) => ExpenditureDetailsView(expenditure: expenditure),
+                  (_) => BlocProvider.value(
+                    value: context.read<ExpensesBloc>(),
+                    // TODO: set correct canEdit
+                    child: ExpenditureDetailsView(
+                      expenditure: expenditure,
+                      canEdit: false,
+                    ),
+                  ),
             ),
           ),
     );

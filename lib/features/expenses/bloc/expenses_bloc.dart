@@ -12,18 +12,20 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
   StreamSubscription? _expensesSub;
   StreamSubscription? _categoriesSub;
 
+  List<ExpenditureCategory> categories = [];
+
   ExpensesBloc(
-    ExpensesRepository expenses,
-    ExpenditureCategoriesRepository categories,
+    ExpensesRepository expensesRepo,
+    ExpenditureCategoriesRepository categoriesRepo,
   ) : super(ExpensesStateLoading()) {
     on<ExpensesEventLoad>((event, emit) {
       _expensesSub?.cancel();
-      _expensesSub = expenses.getExpenses().listen(
+      _expensesSub = expensesRepo.getExpenses().listen(
         (expenses) => add(_ExpensesEventUpdateExpenses(expenses: expenses)),
       );
 
       _categoriesSub?.cancel();
-      _categoriesSub = categories.getCategories().listen(
+      _categoriesSub = categoriesRepo.getCategories().listen(
         (categories) =>
             add(_ExpensesEventUpdateCategories(categories: categories)),
       );
@@ -40,6 +42,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     });
 
     on<_ExpensesEventUpdateCategories>((event, emit) {
+      categories = event.categories;
       emit(
         ExpensesStateLoaded(
           isLoading: false,
@@ -60,13 +63,13 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
       try {
         switch (event.action) {
           case ExpensesAction.add:
-            expenses.add(event.expenditure);
+            expensesRepo.add(event.expenditure);
             break;
           case ExpensesAction.update:
-            expenses.update(event.expenditure);
+            expensesRepo.update(event.expenditure);
             break;
           case ExpensesAction.delete:
-            expenses.delete(event.expenditure);
+            expensesRepo.delete(event.expenditure);
             break;
         }
       } on Exception catch (e) {

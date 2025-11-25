@@ -13,11 +13,9 @@ class CreateUpdateExpenditureView extends StatefulWidget {
     super.key,
     required this.action,
     this.expenditure,
-    required this.categories,
   });
   final ExpensesAction action;
   final Expenditure? expenditure;
-  final Iterable<ExpenditureCategory> categories;
 
   @override
   State<CreateUpdateExpenditureView> createState() =>
@@ -26,6 +24,7 @@ class CreateUpdateExpenditureView extends StatefulWidget {
 
 class _CreateUpdateExpenditureViewState
     extends State<CreateUpdateExpenditureView> {
+  late final List<ExpenditureCategory> categories;
   late final TextEditingController _title;
   late final TextEditingController _amount;
   DateTime _date = DateTime.now();
@@ -34,6 +33,7 @@ class _CreateUpdateExpenditureViewState
   @override
   void initState() {
     super.initState();
+    categories = context.read<ExpensesBloc>().categories;
     _title = TextEditingController(text: widget.expenditure?.title);
     _amount = TextEditingController(text: widget.expenditure?.title);
   }
@@ -91,7 +91,7 @@ class _CreateUpdateExpenditureViewState
               label: 'Category',
               child: DropdownButton<ExpenditureCategory>(
                 items:
-                    widget.categories
+                    categories
                         .map(
                           (category) => DropdownMenuItem<ExpenditureCategory>(
                             value: category,
