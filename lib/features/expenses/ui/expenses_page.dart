@@ -15,7 +15,7 @@ class ExpensesPage extends StatelessWidget {
       builder: (context, state) {
         if (state is ExpensesStateLoaded) {
           return ExpensesListView(
-            expenses: state.expenses?.toList() ?? [],
+            expenses: state.expenses ?? [],
             categories: state.categories ?? [],
           );
         } else {

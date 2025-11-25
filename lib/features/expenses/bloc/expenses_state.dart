@@ -5,8 +5,8 @@ import 'package:home_organizer/features/expenses/data/models/expenditure_categor
 @immutable
 abstract class ExpensesState {
   final bool isLoading;
-  final Iterable<Expenditure>? expenses;
-  final Iterable<ExpenditureCategory>? categories;
+  final List<Expenditure>? expenses;
+  final List<ExpenditureCategory>? categories;
   final Exception? exception;
   const ExpensesState({
     required this.isLoading,

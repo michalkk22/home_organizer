@@ -84,13 +84,13 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
 }
 
 class _ExpensesEventUpdateExpenses extends ExpensesEvent {
-  final Iterable<Expenditure> expenses;
+  final List<Expenditure> expenses;
 
   const _ExpensesEventUpdateExpenses({required this.expenses});
 }
 
 class _ExpensesEventUpdateCategories extends ExpensesEvent {
-  final Iterable<ExpenditureCategory> categories;
+  final List<ExpenditureCategory> categories;
 
   const _ExpensesEventUpdateCategories({required this.categories});
 }
