@@ -42,10 +42,7 @@ class HomePage extends StatelessWidget {
                     )..add(ExpensesEventLoad()),
               ),
             ],
-            child: HomeView(
-              home: state.home,
-              userPermissions: state.home.members[state.user]!,
-            ),
+            child: HomeView(),
           );
         } else if (state is HomeStateNeedUserName) {
           return SetUsernameView();

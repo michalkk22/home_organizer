@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_event.dart';
 import 'package:home_organizer/features/home/bloc/home_state.dart';
 import 'package:home_organizer/features/home/data/models/home.dart';
+import 'package:home_organizer/features/home/data/models/permissions.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
 import 'package:home_organizer/features/home/data/repositories/homes_repository.dart';
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
@@ -9,24 +10,34 @@ import 'package:home_organizer/core/injection/repositories_injection.dart';
 import 'package:home_organizer/features/invitations/data/invitations_repository.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  late Home home;
+  late User user;
+  late Permissions permissions;
   HomeBloc(
     UsersRepository users,
     HomesRepository homes,
     InvitationsRepository invitations,
   ) : super(const HomeStateLoading()) {
     on<HomeEventLoggedIn>((event, emit) async {
-      User? user = await users.user;
-      if (user == null) {
+      final currentUser = await users.user;
+      if (currentUser == null) {
         emit(HomeStateNeedUserName(isLoading: false));
         return;
       }
-      Home? home = await homes.home;
-      if (home == null) {
+      user = currentUser;
+
+      final currentHome = await homes.home;
+      if (currentHome == null) {
         emit(HomeStateNoHomes(isLoading: false));
         return;
       }
-      RepositoriesInjection().setupHomeScopedRepositories(user.id, home.id);
-      emit(HomeStateInHome(isLoading: false, user: user, home: home));
+      home = currentHome;
+      permissions = home.members[user]!;
+      RepositoriesInjection().setupHomeScopedRepositories(
+        currentUser.id,
+        currentHome.id,
+      );
+      emit(HomeStateInHome(isLoading: false));
     });
 
     on<HomeEventSetName>((event, emit) async {
@@ -52,35 +63,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
 
     on<HomeEventInvite>((event, emit) async {
-      if (state is HomeStateInHome) {
-        final inHome = state as HomeStateInHome;
-        try {
-          emit(
-            HomeStateInHome(
-              isLoading: true,
-              user: inHome.user,
-              home: inHome.home,
-            ),
-          );
-          final invitationLink = await invitations.createOrGet();
-          emit(
-            HomeStateInHome(
-              isLoading: false,
-              user: inHome.user,
-              home: inHome.home,
-              invitationLink: invitationLink,
-            ),
-          );
-        } on Exception catch (e) {
-          emit(
-            HomeStateInHome(
-              isLoading: false,
-              user: inHome.user,
-              home: inHome.home,
-              exception: e,
-            ),
-          );
-        }
+      try {
+        emit(HomeStateInHome(isLoading: true));
+        final invitationLink = await invitations.createOrGet();
+        emit(HomeStateInHome(isLoading: false, invitationLink: invitationLink));
+      } on Exception catch (e) {
+        emit(HomeStateInHome(isLoading: false, exception: e));
       }
     });
   }

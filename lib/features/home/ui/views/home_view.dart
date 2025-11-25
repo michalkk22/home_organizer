@@ -10,13 +10,7 @@ import 'package:home_organizer/features/home/data/models/home.dart';
 import 'package:home_organizer/features/home/data/models/permissions.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({
-    super.key,
-    required this.home,
-    required this.userPermissions,
-  });
-  final Home home;
-  final Permissions userPermissions;
+  const HomeView({super.key});
 
   static const tabIcons = [
     Tab(icon: Icon(Icons.message)),
@@ -27,6 +21,8 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Home home = context.read<HomeBloc>().home;
+    final Permissions permissions = context.read<HomeBloc>().permissions;
     return DefaultTabController(
       length: tabs.length,
       child: GestureDetector(
@@ -47,7 +43,7 @@ class HomeView extends StatelessWidget {
                                 context.read<AuthBloc>().add(AuthEventLogOut()),
                         child: Text('Logout'),
                       ),
-                      if (userPermissions.isOwner)
+                      if (permissions.isOwner)
                         PopupMenuItem(
                           onTap: () {
                             context.read<HomeBloc>().add(HomeEventInvite());

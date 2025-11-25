@@ -1,6 +1,4 @@
 import 'package:flutter/foundation.dart' show immutable;
-import 'package:home_organizer/features/home/data/models/home.dart';
-import 'package:home_organizer/features/home/data/models/user.dart';
 
 @immutable
 abstract class HomeState {
@@ -23,14 +21,10 @@ class HomeStateNoHomes extends HomeState {
 }
 
 class HomeStateInHome extends HomeState {
-  final User user;
-  final Home home;
   final String? invitationLink;
   final Exception? exception;
   const HomeStateInHome({
     required super.isLoading,
-    required this.user,
-    required this.home,
     this.invitationLink,
     this.exception,
   });
