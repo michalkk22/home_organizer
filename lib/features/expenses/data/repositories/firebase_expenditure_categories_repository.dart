@@ -61,7 +61,7 @@ class FirebaseExpenditureCategoriesRepository
   }
 
   @override
-  Stream<Iterable<ExpenditureCategory>> getCategories() {
+  Stream<List<ExpenditureCategory>> getCategories() {
     return _categories.snapshots().asyncMap((snapshot) async {
       List<ExpenditureCategory> categories = [];
       for (var doc in snapshot.docs) {

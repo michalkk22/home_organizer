@@ -64,7 +64,7 @@ class FirebaseExpensesRepository implements ExpensesRepository {
   }
 
   @override
-  Stream<Iterable<Expenditure>> getExpenses() {
+  Stream<List<Expenditure>> getExpenses() {
     return _expenses
         .orderBy(ExpensesCollectionNames.dateFieldName, descending: true)
         .snapshots()
