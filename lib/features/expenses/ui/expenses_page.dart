@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_state.dart';
 import 'package:home_organizer/features/expenses/ui/views/expenses_list_view.dart';
+import 'package:home_organizer/utils/dialogs/error_dialog.dart';
 import 'package:home_organizer/utils/loading/loading_screen.dart';
 
 class ExpensesPage extends StatelessWidget {
@@ -14,7 +15,7 @@ class ExpensesPage extends StatelessWidget {
       builder: (context, state) {
         if (state is ExpensesStateLoaded) {
           return ExpensesListView(
-            expenses: state.expenses ?? [],
+            expenses: state.expenses?.toList() ?? [],
             categories: state.categories ?? [],
           );
         } else {
@@ -26,6 +27,11 @@ class ExpensesPage extends StatelessWidget {
           LoadingScreen().show(context: context);
         } else {
           LoadingScreen().hide();
+        }
+
+        if (state.exception != null) {
+          // TODO: switch to get text
+          showErrorDialog(context, 'error');
         }
       },
     );

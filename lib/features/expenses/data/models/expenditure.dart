@@ -29,13 +29,15 @@ class Expenditure {
     required ExpenditureCategory? category,
   }) {
     final data = snapshot.data();
+    final time = data?[ExpensesCollectionNames.dateFieldName] as Timestamp;
+    final date = time.toDate();
     return Expenditure(
       id: snapshot.id,
       userId: data?[ExpensesCollectionNames.userIdFieldName],
       userName: userName,
       title: data?[ExpensesCollectionNames.titleFieldName],
       amount: data?[ExpensesCollectionNames.amountFieldName],
-      date: data?[ExpensesCollectionNames.dateFieldName],
+      date: date,
       category: category,
     );
   }

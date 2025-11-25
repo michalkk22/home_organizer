@@ -51,83 +51,91 @@ class _CreateUpdateExpenditureViewState
     final title = '$actionText expenditure';
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: ListView(
-        padding: const EdgeInsets.all(8.0),
-        children: [
-          FormRow(label: 'Title', child: TextField(controller: _title)),
-          FormRow(
-            label: 'Amount: ',
-            child: TextField(
-              controller: _amount,
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          FormRow(
-            label: 'Date',
-            child: TextButton(
-              onPressed:
-                  () async =>
-                      _date =
-                          await showDatePicker(
-                            context: context,
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime.now().add(Duration(days: 356)),
-                          ) ??
-                          _date,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text(_date.dateFormat), Icon(Icons.arrow_drop_down)],
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: ListView(
+          padding: const EdgeInsets.all(8.0),
+          children: [
+            FormRow(label: 'Title', child: TextField(controller: _title)),
+            FormRow(
+              label: 'Amount: ',
+              child: TextField(
+                controller: _amount,
+                keyboardType: TextInputType.number,
               ),
             ),
-          ),
-          FormRow(
-            label: 'Category',
-            child: DropdownButton<ExpenditureCategory>(
-              items:
-                  widget.categories
-                      .map(
-                        (category) => DropdownMenuItem<ExpenditureCategory>(
-                          value: category,
-                          child: Text(category.name),
-                        ),
-                      )
-                      .toList()
-                    ..add(
-                      DropdownMenuItem<ExpenditureCategory>(
-                        value: null,
-                        child: Text('No category'),
-                      ),
-                    ),
-              onChanged: (value) => _category = value,
+            FormRow(
+              label: 'Date',
+              // TODO: add edit categories button
+              child: TextButton(
+                onPressed:
+                    () async =>
+                        _date =
+                            await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(2020),
+                              lastDate: DateTime.now().add(Duration(days: 356)),
+                            ) ??
+                            _date,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(_date.dateFormat),
+                    Icon(Icons.arrow_drop_down),
+                  ],
+                ),
+              ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              try {
-                final amount = double.parse(_amount.text);
-                final trimmed = double.parse(amount.toStringAsFixed(2));
-                context.read<ExpensesBloc>().add(
-                  ExpensesEventAction(
-                    expenditure: Expenditure(
-                      id: widget.expenditure?.id,
-                      userName: null,
-                      userId: widget.expenditure?.userId,
-                      title: title,
-                      amount: trimmed,
-                      date: _date,
-                      category: _category,
+            FormRow(
+              label: 'Category',
+              child: DropdownButton<ExpenditureCategory>(
+                items:
+                    widget.categories
+                        .map(
+                          (category) => DropdownMenuItem<ExpenditureCategory>(
+                            value: category,
+                            child: Text(category.name),
+                          ),
+                        )
+                        .toList()
+                      ..add(
+                        DropdownMenuItem<ExpenditureCategory>(
+                          value: null,
+                          child: Text('No category'),
+                        ),
+                      ),
+                onChanged: (value) => _category = value,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                try {
+                  final amount = double.parse(_amount.text);
+                  final trimmed = double.parse(amount.toStringAsFixed(2));
+                  context.read<ExpensesBloc>().add(
+                    ExpensesEventAction(
+                      expenditure: Expenditure(
+                        id: widget.expenditure?.id,
+                        userName: null,
+                        userId: widget.expenditure?.userId,
+                        title: _title.text,
+                        amount: trimmed,
+                        date: _date,
+                        category: _category,
+                      ),
+                      action: widget.action,
                     ),
-                    action: widget.action,
-                  ),
-                );
-                Navigator.of(context).pop();
-              } on FormatException catch (_) {
-                showErrorDialog(context, 'Please enter a valid amount');
-              }
-            },
-            child: Text(actionText),
-          ),
-        ],
+                  );
+                  Navigator.of(context).pop();
+                } on FormatException catch (_) {
+                  showErrorDialog(context, 'Please enter a valid amount');
+                }
+              },
+              child: Text(actionText),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_organizer/features/expenses/bloc/expenses_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_event.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure_category.dart';
@@ -11,23 +13,20 @@ class ExpensesListView extends StatelessWidget {
     required this.expenses,
     required this.categories,
   });
-  final Iterable<Expenditure> expenses;
+  final List<Expenditure> expenses;
   final Iterable<ExpenditureCategory> categories;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Expanded(
-          child: ListView(
-            children:
-                expenses
-                    .map(
-                      (expenditure) =>
-                          _expenditureListTile(context, expenditure),
-                    )
-                    .toList(),
-          ),
+        ListView.separated(
+          itemCount: expenses.length,
+          itemBuilder:
+              (BuildContext context, int index) =>
+                  _expenditureListTile(context, expenses[index]),
+          separatorBuilder:
+              (BuildContext context, int index) => const Divider(height: 2),
         ),
         Positioned(
           bottom: 15,
@@ -39,9 +38,12 @@ class ExpensesListView extends StatelessWidget {
                 () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder:
-                        (context) => CreateUpdateExpenditureView(
-                          action: ExpensesAction.add,
-                          categories: categories,
+                        (_) => BlocProvider.value(
+                          value: context.read<ExpensesBloc>(),
+                          child: CreateUpdateExpenditureView(
+                            action: ExpensesAction.add,
+                            categories: categories,
+                          ),
                         ),
                   ),
                 ),
@@ -58,14 +60,32 @@ class ExpensesListView extends StatelessWidget {
   }
 
   Widget _expenditureListTile(BuildContext context, Expenditure expenditure) {
+    final categoryName = expenditure.category?.name ?? '';
+    final width = MediaQuery.of(context).size.width;
     return ListTile(
+      leading: SizedBox(
+        width: width / 4,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${expenditure.amount}',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            Text(' PLN', style: Theme.of(context).textTheme.labelSmall),
+          ],
+        ),
+      ),
       title: Text(expenditure.title),
       subtitle: Text(expenditure.userName ?? 'deleted user'),
-      trailing: Column(
-        children: [
-          Text('${expenditure.amount}'),
-          Text('${expenditure.category?.name}'),
-        ],
+      trailing: SizedBox(
+        width: width / 6,
+        child: Column(
+          children: [
+            Text('${expenditure.date.month}.${expenditure.date.day}'),
+            Text(categoryName),
+          ],
+        ),
       ),
       onTap:
           () => Navigator.of(context).push(

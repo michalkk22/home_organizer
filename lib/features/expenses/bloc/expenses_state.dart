@@ -7,10 +7,12 @@ abstract class ExpensesState {
   final bool isLoading;
   final Iterable<Expenditure>? expenses;
   final Iterable<ExpenditureCategory>? categories;
+  final Exception? exception;
   const ExpensesState({
     required this.isLoading,
     this.expenses,
     this.categories,
+    this.exception,
   });
 }
 
@@ -23,5 +25,6 @@ class ExpensesStateLoaded extends ExpensesState {
     required super.isLoading,
     required super.expenses,
     required super.categories,
+    super.exception,
   });
 }

@@ -57,16 +57,27 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
           categories: state.categories,
         ),
       );
-      switch (event.action) {
-        case ExpensesAction.add:
-          expenses.add(event.expenditure);
-          break;
-        case ExpensesAction.update:
-          expenses.update(event.expenditure);
-          break;
-        case ExpensesAction.delete:
-          expenses.delete(event.expenditure);
-          break;
+      try {
+        switch (event.action) {
+          case ExpensesAction.add:
+            expenses.add(event.expenditure);
+            break;
+          case ExpensesAction.update:
+            expenses.update(event.expenditure);
+            break;
+          case ExpensesAction.delete:
+            expenses.delete(event.expenditure);
+            break;
+        }
+      } on Exception catch (e) {
+        emit(
+          ExpensesStateLoaded(
+            isLoading: false,
+            expenses: state.expenses,
+            categories: state.categories,
+            exception: e,
+          ),
+        );
       }
     });
   }
