@@ -43,3 +43,11 @@ abstract class ExpenditureCategoriesCollectionNames {
   static const defaultsCollectionName = 'defaultExpenditureCategories';
   static const nameFieldName = 'name';
 }
+
+abstract class ShoppingListCollectionNames {
+  static const collectionName = 'shoppingList';
+  static const nameFieldName = 'name';
+  static const quantityFieldName = 'quantity';
+  static const unitFieldName = 'unit';
+  static const inCartFieldName = 'inCart';
+}
