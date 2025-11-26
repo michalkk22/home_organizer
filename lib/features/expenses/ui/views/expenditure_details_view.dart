@@ -77,26 +77,32 @@ class ExpenditureDetailsView extends StatelessWidget {
                       ),
                       SizedBox(width: 10),
                       ElevatedButton(
-                        onPressed:
-                            () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => MultiBlocProvider(
-                                      providers: [
-                                        BlocProvider.value(
-                                          value: context.read<ExpensesBloc>(),
-                                        ),
-                                        BlocProvider.value(
-                                          value: context.read<HomeBloc>(),
-                                        ),
-                                      ],
-                                      child: CreateUpdateExpenditureView(
-                                        action: ExpensesAction.update,
-                                        expenditure: expenditure,
+                        onPressed: () async {
+                          final didEdit = await Navigator.of(
+                            context,
+                          ).push<bool?>(
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider.value(
+                                        value: context.read<ExpensesBloc>(),
                                       ),
+                                      BlocProvider.value(
+                                        value: context.read<HomeBloc>(),
+                                      ),
+                                    ],
+                                    child: CreateUpdateExpenditureView(
+                                      action: ExpensesAction.update,
+                                      expenditure: expenditure,
                                     ),
-                              ),
+                                  ),
                             ),
+                          );
+                          if (didEdit ?? false) {
+                            Navigator.of(context).pop();
+                          }
+                        },
                         child: Text('Edit'),
                       ),
                     ],

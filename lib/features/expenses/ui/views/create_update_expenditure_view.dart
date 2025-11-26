@@ -160,7 +160,7 @@ class _CreateUpdateExpenditureViewState
                       action: widget.action,
                     ),
                   );
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true);
                 } on FormatException catch (_) {
                   showErrorDialog(context, 'Please enter a valid amount');
                 }
