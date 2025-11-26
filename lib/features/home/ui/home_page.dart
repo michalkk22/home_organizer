@@ -16,6 +16,7 @@ import 'package:home_organizer/features/home/ui/views/home_view.dart';
 import 'package:home_organizer/features/home/ui/views/set_username_view.dart';
 import 'package:home_organizer/features/invitations/domain/invitations_repository_exception.dart';
 import 'package:home_organizer/features/shopping/bloc/shopping_bloc.dart';
+import 'package:home_organizer/features/shopping/bloc/shopping_event.dart';
 import 'package:home_organizer/features/shopping/data/shopping_repository.dart';
 import 'package:home_organizer/utils/dialogs/error_dialog.dart';
 import 'package:home_organizer/utils/loading/loading_screen.dart';
@@ -44,7 +45,10 @@ class HomePage extends StatelessWidget {
                     )..add(ExpensesEventLoad()),
               ),
               BlocProvider(
-                create: (context) => ShoppingBloc(getIt<ShoppingRepository>()),
+                create:
+                    (context) =>
+                        ShoppingBloc(getIt<ShoppingRepository>())
+                          ..add(ShoppingEventLoad()),
               ),
             ],
             child: HomeView(),
