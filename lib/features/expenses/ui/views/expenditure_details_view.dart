@@ -4,20 +4,23 @@ import 'package:home_organizer/features/expenses/bloc/expenses_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_event.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure.dart';
 import 'package:home_organizer/features/expenses/ui/views/create_update_expenditure_view.dart';
+import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/utils/dialogs/confirmation_dialog.dart';
+import 'package:home_organizer/utils/extensions/date_time_format.dart';
 import 'package:home_organizer/widgets/details_row.dart';
 
 class ExpenditureDetailsView extends StatelessWidget {
-  const ExpenditureDetailsView({
-    super.key,
-    required this.expenditure,
-    required this.canEdit,
-  });
+  const ExpenditureDetailsView({super.key, required this.expenditure});
   final Expenditure expenditure;
-  final bool canEdit;
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<HomeBloc>().user;
+    final permissions = context.read<HomeBloc>().permissions;
+
+    final isExpenditureOwner = user == expenditure.user;
+    final canEdit = permissions.isOwner || isExpenditureOwner;
+
     return Scaffold(
       appBar: AppBar(title: Text(expenditure.title)),
       body: SizedBox.expand(
@@ -31,11 +34,15 @@ class ExpenditureDetailsView extends StatelessWidget {
                     DetailsRow(label: 'Title:', text: expenditure.title),
                     DetailsRow(
                       label: 'User:',
-                      text: expenditure.userName ?? 'deleted user',
+                      text: expenditure.user?.name ?? 'deleted user',
                     ),
                     DetailsRow(
                       label: 'Amount:',
                       text: '${expenditure.amount} PLN',
+                    ),
+                    DetailsRow(
+                      label: 'Date:',
+                      text: expenditure.date.dateFormat,
                     ),
                     DetailsRow(
                       label: 'Category:',
@@ -46,8 +53,8 @@ class ExpenditureDetailsView extends StatelessWidget {
               ),
               if (canEdit)
                 Positioned(
-                  bottom: 20,
-                  right: 20,
+                  bottom: 30,
+                  right: 15,
                   child: Row(
                     children: [
                       ElevatedButton(
@@ -63,24 +70,33 @@ class ExpenditureDetailsView extends StatelessWidget {
                                 action: ExpensesAction.delete,
                               ),
                             );
+                            Navigator.of(context).pop();
                           }
                         },
                         child: Text('Delete'),
                       ),
+                      SizedBox(width: 10),
                       ElevatedButton(
                         onPressed:
-                            () =>
-                                () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (_) => BlocProvider.value(
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => MultiBlocProvider(
+                                      providers: [
+                                        BlocProvider.value(
                                           value: context.read<ExpensesBloc>(),
-                                          child: CreateUpdateExpenditureView(
-                                            action: ExpensesAction.add,
-                                          ),
                                         ),
-                                  ),
-                                ),
+                                        BlocProvider.value(
+                                          value: context.read<HomeBloc>(),
+                                        ),
+                                      ],
+                                      child: CreateUpdateExpenditureView(
+                                        action: ExpensesAction.update,
+                                        expenditure: expenditure,
+                                      ),
+                                    ),
+                              ),
+                            ),
                         child: Text('Edit'),
                       ),
                     ],

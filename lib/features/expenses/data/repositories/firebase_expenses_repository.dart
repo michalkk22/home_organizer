@@ -29,7 +29,8 @@ class FirebaseExpensesRepository implements ExpensesRepository {
   Future<Expenditure> add(Expenditure expenditure) async {
     try {
       final doc = await _expenses.add({
-        ExpensesCollectionNames.userIdFieldName: expenditure.userId ?? _userId,
+        ExpensesCollectionNames.userIdFieldName:
+            expenditure.user?.id ?? _userId,
         ExpensesCollectionNames.titleFieldName: expenditure.title,
         ExpensesCollectionNames.amountFieldName: expenditure.amount,
         ExpensesCollectionNames.dateFieldName: expenditure.date,
@@ -96,7 +97,7 @@ class FirebaseExpensesRepository implements ExpensesRepository {
       }
       final doc = _expenses.doc(expenditure.id);
       await doc.update({
-        ExpensesCollectionNames.userIdFieldName: expenditure.userName,
+        ExpensesCollectionNames.userIdFieldName: expenditure.user?.id,
         ExpensesCollectionNames.titleFieldName: expenditure.title,
         ExpensesCollectionNames.amountFieldName: expenditure.amount,
         ExpensesCollectionNames.dateFieldName: expenditure.date,

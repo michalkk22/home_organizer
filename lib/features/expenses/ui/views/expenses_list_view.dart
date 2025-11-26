@@ -3,18 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_event.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure.dart';
-import 'package:home_organizer/features/expenses/data/models/expenditure_category.dart';
 import 'package:home_organizer/features/expenses/ui/views/create_update_expenditure_view.dart';
 import 'package:home_organizer/features/expenses/ui/views/expenditure_details_view.dart';
+import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 
 class ExpensesListView extends StatelessWidget {
-  const ExpensesListView({
-    super.key,
-    required this.expenses,
-    required this.categories,
-  });
+  const ExpensesListView({super.key, required this.expenses});
   final List<Expenditure> expenses;
-  final Iterable<ExpenditureCategory> categories;
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +17,10 @@ class ExpensesListView extends StatelessWidget {
       children: [
         ListView.separated(
           itemCount: expenses.length,
-          itemBuilder:
-              (BuildContext context, int index) =>
-                  _expenditureListTile(context, expenses[index]),
+          itemBuilder: (BuildContext context, int index) {
+            final expenditure = expenses[index];
+            return _expenditureListTile(context, expenditure);
+          },
           separatorBuilder:
               (BuildContext context, int index) => const Divider(height: 2),
         ),
@@ -38,8 +34,13 @@ class ExpensesListView extends StatelessWidget {
                 () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder:
-                        (_) => BlocProvider.value(
-                          value: context.read<ExpensesBloc>(),
+                        (_) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider.value(
+                              value: context.read<ExpensesBloc>(),
+                            ),
+                            BlocProvider.value(value: context.read<HomeBloc>()),
+                          ],
                           child: CreateUpdateExpenditureView(
                             action: ExpensesAction.add,
                           ),
@@ -76,7 +77,7 @@ class ExpensesListView extends StatelessWidget {
         ),
       ),
       title: Text(expenditure.title),
-      subtitle: Text(expenditure.userName ?? 'deleted user'),
+      subtitle: Text(expenditure.user?.name ?? 'deleted user'),
       trailing: SizedBox(
         width: width / 6,
         child: Column(
@@ -90,13 +91,12 @@ class ExpensesListView extends StatelessWidget {
           () => Navigator.of(context).push(
             MaterialPageRoute(
               builder:
-                  (_) => BlocProvider.value(
-                    value: context.read<ExpensesBloc>(),
-                    // TODO: set correct canEdit
-                    child: ExpenditureDetailsView(
-                      expenditure: expenditure,
-                      canEdit: false,
-                    ),
+                  (_) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(value: context.read<ExpensesBloc>()),
+                      BlocProvider.value(value: context.read<HomeBloc>()),
+                    ],
+                    child: ExpenditureDetailsView(expenditure: expenditure),
                   ),
             ),
           ),

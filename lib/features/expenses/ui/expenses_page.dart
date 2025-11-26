@@ -14,10 +14,7 @@ class ExpensesPage extends StatelessWidget {
     return BlocConsumer<ExpensesBloc, ExpensesState>(
       builder: (context, state) {
         if (state is ExpensesStateLoaded) {
-          return ExpensesListView(
-            expenses: state.expenses ?? [],
-            categories: state.categories ?? [],
-          );
+          return ExpensesListView(expenses: state.expenses ?? []);
         } else {
           return Container();
         }
