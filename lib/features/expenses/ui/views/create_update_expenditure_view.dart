@@ -4,8 +4,10 @@ import 'package:home_organizer/features/expenses/bloc/expenses_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_event.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure_category.dart';
+import 'package:home_organizer/features/expenses/ui/views/categories_list_view.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/data/models/home.dart';
+import 'package:home_organizer/features/home/data/models/permissions.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
 import 'package:home_organizer/utils/dialogs/error_dialog.dart';
 import 'package:home_organizer/utils/extensions/date_time_format.dart';
@@ -30,9 +32,10 @@ class _CreateUpdateExpenditureViewState
   late final TextEditingController _title;
   late final TextEditingController _amount;
 
-  late final List<ExpenditureCategory> categories;
+  late List<ExpenditureCategory> categories;
   late final Home home;
   late final User currentUser;
+  late final Permissions permissions;
 
   late DateTime _date = widget.expenditure?.date ?? DateTime.now();
   ExpenditureCategory? _category;
@@ -53,6 +56,7 @@ class _CreateUpdateExpenditureViewState
     categories = context.read<ExpensesBloc>().categories;
     home = context.read<HomeBloc>().home;
     currentUser = context.read<HomeBloc>().user;
+    permissions = context.read<HomeBloc>().permissions;
 
     _user = widget.expenditure?.user ?? currentUser;
   }
@@ -72,11 +76,11 @@ class _CreateUpdateExpenditureViewState
         behavior: HitTestBehavior.translucent,
         onTap: () => FocusScope.of(context).unfocus(),
         child: ListView(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(10),
           children: [
-            FormRow(label: 'Title', child: TextField(controller: _title)),
+            FormRow(label: 'Title:', child: TextField(controller: _title)),
             FormRow(
-              label: 'User',
+              label: 'User:',
               child: DropdownMenu<User>(
                 initialSelection: _user,
                 dropdownMenuEntries:
@@ -92,15 +96,14 @@ class _CreateUpdateExpenditureViewState
               ),
             ),
             FormRow(
-              label: 'Amount: ',
+              label: 'Amount:',
               child: TextField(
                 controller: _amount,
                 keyboardType: TextInputType.number,
               ),
             ),
             FormRow(
-              label: 'Date',
-              // TODO: add edit categories button
+              label: 'Date:',
               child: TextButton(
                 onPressed:
                     () async =>
@@ -122,24 +125,52 @@ class _CreateUpdateExpenditureViewState
               ),
             ),
             FormRow(
-              label: 'Category',
-              child: DropdownMenu<ExpenditureCategory?>(
-                dropdownMenuEntries:
-                    categories
-                        .map(
-                          (category) => DropdownMenuEntry<ExpenditureCategory?>(
-                            value: category,
-                            label: category.name,
+              label: 'Category:',
+              child: Row(
+                children: [
+                  DropdownMenu<ExpenditureCategory?>(
+                    dropdownMenuEntries:
+                        categories
+                            .map(
+                              (category) =>
+                                  DropdownMenuEntry<ExpenditureCategory?>(
+                                    value: category,
+                                    label: category.name,
+                                  ),
+                            )
+                            .toList()
+                          ..add(
+                            DropdownMenuEntry<ExpenditureCategory?>(
+                              value: null,
+                              label: 'No category',
+                            ),
                           ),
-                        )
-                        .toList()
-                      ..add(
-                        DropdownMenuEntry<ExpenditureCategory?>(
-                          value: null,
-                          label: 'No category',
-                        ),
-                      ),
-                onSelected: (category) => _category = category,
+                    onSelected: (category) => _category = category,
+                  ),
+                  if (permissions.isOwner)
+                    IconButton(
+                      onPressed: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder:
+                                (_) => MultiBlocProvider(
+                                  providers: [
+                                    BlocProvider.value(
+                                      value: context.read<ExpensesBloc>(),
+                                    ),
+                                    BlocProvider.value(
+                                      value: context.read<HomeBloc>(),
+                                    ),
+                                  ],
+                                  child: CategoriesListView(),
+                                ),
+                          ),
+                        );
+                        categories = context.read<ExpensesBloc>().categories;
+                      },
+                      icon: Icon(Icons.edit),
+                    ),
+                ],
               ),
             ),
             ElevatedButton(

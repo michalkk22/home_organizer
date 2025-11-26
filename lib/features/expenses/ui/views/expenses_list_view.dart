@@ -81,6 +81,7 @@ class ExpensesListView extends StatelessWidget {
       trailing: SizedBox(
         width: width / 6,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text('${expenditure.date.month}.${expenditure.date.day}'),
             Text(categoryName),

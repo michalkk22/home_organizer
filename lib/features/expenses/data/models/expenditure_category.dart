@@ -18,4 +18,15 @@ class ExpenditureCategory {
       name: data?[ExpenditureCategoriesCollectionNames.nameFieldName],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! ExpenditureCategory) {
+      return false;
+    }
+    return id == other.id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

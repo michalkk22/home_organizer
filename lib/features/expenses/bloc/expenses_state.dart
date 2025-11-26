@@ -28,3 +28,12 @@ class ExpensesStateLoaded extends ExpensesState {
     super.exception,
   });
 }
+
+class ExpensesStateCategories extends ExpensesState {
+  const ExpensesStateCategories({
+    required super.isLoading,
+    required super.expenses,
+    required super.categories,
+    super.exception,
+  });
+}

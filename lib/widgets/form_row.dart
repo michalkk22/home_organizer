@@ -11,7 +11,8 @@ class FormRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          SizedBox(width: 120, child: Text(label)),
+          SizedBox(width: 70, child: Text(label, textAlign: TextAlign.right)),
+          SizedBox(width: 10),
           Expanded(child: child),
         ],
       ),

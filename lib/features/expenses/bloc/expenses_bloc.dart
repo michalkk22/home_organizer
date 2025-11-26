@@ -83,6 +83,38 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
         );
       }
     });
+
+    on<ExpensesEventCategoryAction>((event, emit) {
+      emit(
+        ExpensesStateLoaded(
+          isLoading: true,
+          expenses: state.expenses,
+          categories: state.categories,
+        ),
+      );
+      try {
+        switch (event.action) {
+          case ExpensesAction.add:
+            categoriesRepo.add(event.category);
+            break;
+          case ExpensesAction.update:
+            categoriesRepo.update(event.category);
+            break;
+          case ExpensesAction.delete:
+            categoriesRepo.delete(event.category);
+            break;
+        }
+      } on Exception catch (e) {
+        emit(
+          ExpensesStateCategories(
+            isLoading: false,
+            expenses: state.expenses,
+            categories: state.categories,
+            exception: e,
+          ),
+        );
+      }
+    });
   }
 }
 
