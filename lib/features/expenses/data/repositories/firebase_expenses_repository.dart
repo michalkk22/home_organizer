@@ -117,7 +117,7 @@ class FirebaseExpensesRepository implements ExpensesRepository {
       final doc = _expenses.doc(expenditure.id);
       await doc.delete();
     } catch (e) {
-      throw CouldNotUpdateExpensesRepositoryException();
+      throw CouldNotDeleteExpensesRepositoryException();
     }
   }
 
