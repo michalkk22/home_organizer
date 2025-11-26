@@ -30,15 +30,18 @@ class _CategoryListTileState extends State<CategoryListTile> {
   }
 
   void _update() {
-    context.read<ExpensesBloc>().add(
-      ExpensesEventCategoryAction(
-        category: ExpenditureCategory(
-          id: widget.category.id,
-          name: _controller.text,
+    if (_controller.text.isNotEmpty &&
+        _controller.text != widget.category.name) {
+      context.read<ExpensesBloc>().add(
+        ExpensesEventCategoryAction(
+          category: ExpenditureCategory(
+            id: widget.category.id,
+            name: _controller.text,
+          ),
+          action: ExpensesAction.update,
         ),
-        action: ExpensesAction.update,
-      ),
-    );
+      );
+    }
     isUpdating = false;
   }
 
