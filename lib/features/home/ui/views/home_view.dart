@@ -8,6 +8,7 @@ import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_event.dart';
 import 'package:home_organizer/features/home/data/models/home.dart';
 import 'package:home_organizer/features/home/data/models/permissions.dart';
+import 'package:home_organizer/features/shopping/ui/shopping_list_page.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -15,9 +16,10 @@ class HomeView extends StatelessWidget {
   static const tabIcons = [
     Tab(icon: Icon(Icons.message)),
     Tab(icon: Icon(Icons.wallet)),
+    Tab(icon: Icon(Icons.shopping_bag)),
   ];
 
-  static const tabs = [ChatPage(), ExpensesPage()];
+  static const tabs = [ChatPage(), ExpensesPage(), ShoppingListPage()];
 
   @override
   Widget build(BuildContext context) {

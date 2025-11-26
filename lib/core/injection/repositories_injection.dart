@@ -12,6 +12,8 @@ import 'package:home_organizer/features/home/data/repositories/homes_repository.
 import 'package:home_organizer/features/home/data/repositories/users_repository.dart';
 import 'package:home_organizer/features/invitations/data/firebase_invitations_repository.dart';
 import 'package:home_organizer/features/invitations/data/invitations_repository.dart';
+import 'package:home_organizer/features/shopping/data/firebase_shopping_repository.dart';
+import 'package:home_organizer/features/shopping/data/shopping_repository.dart';
 
 /// Make sure to call setupInitialRepositories() before other setup functions
 class RepositoriesInjection {
@@ -49,6 +51,9 @@ class RepositoriesInjection {
         expenditureCategoriesRepository,
         getIt<UsersRepository>(),
       ),
+    );
+    getIt.registerLazySingleton<ShoppingRepository>(
+      () => FirebaseShoppingRepository(homeId),
     );
   }
 
