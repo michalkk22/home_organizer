@@ -123,23 +123,23 @@ class _CreateUpdateExpenditureViewState
             ),
             FormRow(
               label: 'Category',
-              child: DropdownButton<ExpenditureCategory>(
-                items:
+              child: DropdownMenu<ExpenditureCategory?>(
+                dropdownMenuEntries:
                     categories
                         .map(
-                          (category) => DropdownMenuItem<ExpenditureCategory>(
+                          (category) => DropdownMenuEntry<ExpenditureCategory?>(
                             value: category,
-                            child: Text(category.name),
+                            label: category.name,
                           ),
                         )
                         .toList()
                       ..add(
-                        DropdownMenuItem<ExpenditureCategory>(
+                        DropdownMenuEntry<ExpenditureCategory?>(
                           value: null,
-                          child: Text('No category'),
+                          label: 'No category',
                         ),
                       ),
-                onChanged: (value) => _category = value,
+                onSelected: (category) => _category = category,
               ),
             ),
             ElevatedButton(
