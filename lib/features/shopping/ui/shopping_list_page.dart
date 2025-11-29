@@ -15,13 +15,13 @@ class ShoppingListPage extends StatelessWidget {
     return BlocConsumer<ShoppingBloc, ShoppingState>(
       builder: (context, state) {
         if (state is ShoppingStateRunning) {
-          return ShoppingListView();
+          return ShoppingListView(items: state.items ?? []);
         } else {
           return Container();
         }
       },
       listener: (BuildContext context, ShoppingState state) {
-        if (state.isLoading) {
+        if (state is ShoppingStateLoading) {
           LoadingScreen().show(context: context);
         } else {
           LoadingScreen().hide();

@@ -18,6 +18,7 @@ class CategoriesListView extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(title: Text('Expenditure categories')),
           body: FloatingDropdownTextField(
+            hintText: 'Enter category name here',
             onAdd:
                 (text) => context.read<ExpensesBloc>().add(
                   ExpensesEventCategoryAction(

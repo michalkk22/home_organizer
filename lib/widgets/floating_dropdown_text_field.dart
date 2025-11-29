@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class FloatingDropdownTextField extends StatefulWidget {
@@ -5,9 +7,11 @@ class FloatingDropdownTextField extends StatefulWidget {
     super.key,
     required this.body,
     required this.onAdd,
+    this.hintText,
   });
   final Widget body;
   final void Function(String text) onAdd;
+  final String? hintText;
 
   @override
   State<FloatingDropdownTextField> createState() =>
@@ -64,7 +68,7 @@ class _FloatingDropdownTextFieldState extends State<FloatingDropdownTextField> {
             onPressed: () => _addButtonFunction(context),
             heroTag: 'add',
             child: Icon(
-              Icons.add,
+              addFieldVisible ? Icons.check : Icons.add,
               color: Theme.of(context).colorScheme.primary,
               size: Theme.of(context).iconTheme.size ?? 40,
             ),
@@ -77,7 +81,7 @@ class _FloatingDropdownTextFieldState extends State<FloatingDropdownTextField> {
             right: 75,
             child: TextField(
               controller: _controller,
-              decoration: InputDecoration(hintText: 'Enter category name here'),
+              decoration: InputDecoration(hintText: widget.hintText),
             ),
           ),
         if (addFieldVisible)
@@ -89,10 +93,13 @@ class _FloatingDropdownTextFieldState extends State<FloatingDropdownTextField> {
               shape: CircleBorder(),
               onPressed: () => _hideButtonFunction(),
               heroTag: 'hide',
-              child: Icon(
-                Icons.arrow_right,
-                color: Theme.of(context).colorScheme.primary,
-                size: Theme.of(context).iconTheme.size ?? 40,
+              child: Transform.rotate(
+                angle: pi / 4,
+                child: Icon(
+                  Icons.add,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: Theme.of(context).iconTheme.size ?? 40,
+                ),
               ),
             ),
           ),

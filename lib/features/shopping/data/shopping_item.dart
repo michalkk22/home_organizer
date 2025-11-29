@@ -30,4 +30,17 @@ class ShoppingItem {
       inCart: data?[ShoppingListCollectionNames.inCartFieldName],
     );
   }
+
+  ShoppingItem copyWith({
+    final String? name,
+    final double? quantity,
+    final String? unit,
+    final bool? inCart,
+  }) => ShoppingItem(
+    id: id,
+    name: name ?? this.name,
+    quantity: quantity ?? this.quantity,
+    unit: unit ?? this.unit,
+    inCart: inCart ?? this.inCart,
+  );
 }
