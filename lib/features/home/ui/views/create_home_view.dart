@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:home_organizer/features/auth/bloc/auth_bloc.dart';
+import 'package:home_organizer/features/auth/bloc/auth_event.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_event.dart';
 
@@ -28,7 +30,15 @@ class _CreateHomeViewState extends State<CreateHomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create your home')),
+      appBar: AppBar(
+        title: const Text('Create your home'),
+        actions: [
+          IconButton(
+            onPressed: () => context.read<AuthBloc>().add(AuthEventLogOut()),
+            icon: Icon(Icons.logout),
+          ),
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
