@@ -11,6 +11,8 @@ import 'package:home_organizer/features/expenses/data/repositories/expenditure_c
 import 'package:home_organizer/features/expenses/data/repositories/expenses_repository.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/bloc/home_state.dart';
+import 'package:home_organizer/features/home/domain/homes_repository_exception.dart';
+import 'package:home_organizer/features/home/domain/users_repository_exception.dart';
 import 'package:home_organizer/features/home/ui/views/create_home_view.dart';
 import 'package:home_organizer/features/home/ui/views/home_view.dart';
 import 'package:home_organizer/features/home/ui/views/set_username_view.dart';
@@ -67,21 +69,43 @@ class HomePage extends StatelessWidget {
           LoadingScreen().hide();
         }
 
-        if (state is HomeStateInHome) {
-          if (state.exception != null) {
-            if (state.exception is HomeNotFoundInvitationsRepositoryException) {
-              showErrorDialog(context, 'You must select home first.');
-            } else if (state.exception
-                is CouldNotCreateInvitationsRepositoryException) {
-              showErrorDialog(context, "Couldn't create your invitation");
-            } else if (state.exception
-                is GenericInvitationsRepositoryException) {
-              showErrorDialog(context, 'Unknown error');
-            } else {
-              showErrorDialog(context, "Couldn't find your invitation data");
-            }
+        if (state.exception != null) {
+          // in home exceptions
+          if (state.exception is HomeNotFoundInvitationsRepositoryException) {
+            showErrorDialog(context, 'You must select home first.');
+          } else if (state.exception
+              is CouldNotCreateInvitationsRepositoryException) {
+            showErrorDialog(context, "Couldn't create your invitation");
+          } else if (state.exception is GenericInvitationsRepositoryException) {
+            showErrorDialog(context, "Couldn't find your invitation data");
+            // no home exceptions
+          } else if (state.exception is InvalidNameHomesRepositoryException) {
+            showErrorDialog(
+              context,
+              'Home name must consist of at least 4 valid characters.',
+            );
+          } else if (state.exception
+              is CouldNotCreateHomesRepositoryException) {
+            showErrorDialog(context, "Couldn't create home");
+          } else if (state.exception
+              is CouldNotRetrieveDataHomesRepositoryException) {
+            showErrorDialog(context, "Couldn't retrieve home data");
+            // need user name exceptions
+          } else if (state.exception is InvalidNameUsersRepositoryException) {
+            showErrorDialog(
+              context,
+              'User name must consist of at least 4 valid characters.',
+            );
+          } else if (state.exception
+              is CouldNotRetrieveDataUsersRepositoryException) {
+            showErrorDialog(context, "Couldn't retrieve user data");
+            // other exceptions
+          } else {
+            showErrorDialog(context, 'Unknown error');
           }
+        }
 
+        if (state is HomeStateInHome) {
           if (state.invitationLink != null) {
             final link = state.invitationLink!;
             showDialog(

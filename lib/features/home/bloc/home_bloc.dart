@@ -19,25 +19,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     InvitationsRepository invitations,
   ) : super(const HomeStateLoading()) {
     on<HomeEventLoggedIn>((event, emit) async {
-      final currentUser = await users.user;
-      if (currentUser == null) {
-        emit(HomeStateNeedUserName(isLoading: false));
-        return;
-      }
-      user = currentUser;
+      try {
+        final currentUser = await users.user;
+        if (currentUser == null) {
+          emit(HomeStateNeedUserName(isLoading: false));
+          return;
+        }
+        user = currentUser;
 
-      final currentHome = await homes.home;
-      if (currentHome == null) {
-        emit(HomeStateNoHomes(isLoading: false));
-        return;
+        final currentHome = await homes.home;
+        if (currentHome == null) {
+          emit(HomeStateNoHomes(isLoading: false));
+          return;
+        }
+        home = currentHome;
+        permissions = home.members[user]!;
+        RepositoriesInjection().setupHomeScopedRepositories(
+          currentUser.id,
+          currentHome.id,
+        );
+        emit(HomeStateInHome(isLoading: false));
+      } on Exception catch (e) {
+        emit(HomeStateNoHomes(isLoading: false, exception: e));
       }
-      home = currentHome;
-      permissions = home.members[user]!;
-      RepositoriesInjection().setupHomeScopedRepositories(
-        currentUser.id,
-        currentHome.id,
-      );
-      emit(HomeStateInHome(isLoading: false));
     });
 
     on<HomeEventSetName>((event, emit) async {
@@ -53,10 +57,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     on<HomeEventCreateHome>((event, emit) async {
       try {
-        emit(HomeStateNeedUserName(isLoading: true));
+        emit(HomeStateNoHomes(isLoading: true));
         await homes.create(event.homeName);
       } on Exception catch (e) {
-        emit(HomeStateNeedUserName(isLoading: false, exception: e));
+        emit(HomeStateNoHomes(isLoading: false, exception: e));
         return;
       }
       add(HomeEventLoggedIn());

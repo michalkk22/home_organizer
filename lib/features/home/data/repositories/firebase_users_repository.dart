@@ -27,11 +27,15 @@ class FirebaseUsersRepository implements UsersRepository {
       throw CouldNotUpdateUsersRepositoryException();
     }
 
-    final user = await _user;
-    if (user == null) {
+    try {
+      final user = await _user;
+      if (user == null) {
+        throw CouldNotRetrieveDataUsersRepositoryException();
+      }
+      return user;
+    } catch (_) {
       throw CouldNotRetrieveDataUsersRepositoryException();
     }
-    return user;
   }
 
   @override
@@ -44,10 +48,14 @@ class FirebaseUsersRepository implements UsersRepository {
 
   @override
   Future<User?> getById(String id) async {
-    final doc = await _users.doc(id).get();
-    if (doc.data() == null) {
-      return null;
+    try {
+      final doc = await _users.doc(id).get();
+      if (doc.data() == null) {
+        return null;
+      }
+      return User.fromFirestore(snapshot: doc);
+    } on Exception {
+      rethrow;
     }
-    return User.fromFirestore(snapshot: doc);
   }
 }

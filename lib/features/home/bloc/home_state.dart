@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart' show immutable;
 @immutable
 abstract class HomeState {
   final bool isLoading;
-  const HomeState({required this.isLoading});
+  final Exception? exception;
+  const HomeState({required this.isLoading, this.exception});
 }
 
 class HomeStateLoading extends HomeState {
@@ -11,21 +12,18 @@ class HomeStateLoading extends HomeState {
 }
 
 class HomeStateNeedUserName extends HomeState {
-  final Exception? exception;
-  const HomeStateNeedUserName({required super.isLoading, this.exception});
+  const HomeStateNeedUserName({required super.isLoading, super.exception});
 }
 
 class HomeStateNoHomes extends HomeState {
-  final Exception? exception;
-  const HomeStateNoHomes({required super.isLoading, this.exception});
+  const HomeStateNoHomes({required super.isLoading, super.exception});
 }
 
 class HomeStateInHome extends HomeState {
   final String? invitationLink;
-  final Exception? exception;
   const HomeStateInHome({
     required super.isLoading,
     this.invitationLink,
-    this.exception,
+    super.exception,
   });
 }
