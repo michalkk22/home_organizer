@@ -15,7 +15,6 @@ import 'package:home_organizer/features/invitations/data/invitations_repository.
 import 'package:home_organizer/features/shopping/data/firebase_shopping_repository.dart';
 import 'package:home_organizer/features/shopping/data/shopping_repository.dart';
 
-/// Make sure to call setupInitialRepositories() before other setup functions
 class RepositoriesInjection {
   final getIt = GetIt.instance;
 

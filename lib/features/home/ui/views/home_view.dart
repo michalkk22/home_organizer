@@ -34,7 +34,7 @@ class HomeView extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             title: Text(home.name),
-            leading: Icon(Icons.wheelchair_pickup),
+            leading: Icon(Icons.home),
             actions: [
               PopupMenuButton(
                 itemBuilder:
