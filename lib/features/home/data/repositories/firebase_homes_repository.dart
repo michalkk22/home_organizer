@@ -109,29 +109,4 @@ class FirebaseHomesRepository implements HomesRepository {
       throw CouldNotRetrieveDataHomesRepositoryException();
     }
   }
-
-  @override
-  Future<void> addMember(String homeId, String userId, WriteBatch batch) async {
-    try {
-      final homeRef = _db
-          .collection(HomesCollectionNames.collectionName)
-          .doc(homeId);
-
-      final permissionsRef = homeRef
-          .collection(PermissionsCollectionNames.collectionName)
-          .doc(userId);
-
-      // add user to members
-      batch.update(homeRef, {
-        HomesCollectionNames.membersFieldName: FieldValue.arrayUnion([userId]),
-      });
-
-      // set permissions
-      batch.set(permissionsRef, {
-        PermissionsCollectionNames.isOwnerFieldName: false,
-      });
-    } catch (_) {
-      throw CouldNotAddMemberHomesRepositoryException();
-    }
-  }
 }
