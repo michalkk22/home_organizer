@@ -27,6 +27,10 @@ abstract class InvitationsCollectionNames {
   static const String createdByFieldName = 'createbBy';
   static const String expiresAtFieldName = 'expiresAt';
   static const String usedByFieldName = 'usedBy';
+  static const String statusFieldName = 'status';
+  static const String acceptedStatus = 'accepted';
+  static const String pendingStatus = 'pending';
+  static const String failedStatus = 'failed';
 }
 
 abstract class ExpensesCollectionNames {

@@ -144,4 +144,14 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
     }
     return true;
   }
+
+  @override
+  Stream<String> observeStatus(String invitationId) => _invitations
+      .doc(invitationId)
+      .snapshots()
+      .map(
+        (doc) =>
+            doc.data()?[InvitationsCollectionNames.statusFieldName]?[_userId] ??
+            '',
+      );
 }

@@ -3,8 +3,16 @@ import 'package:home_organizer/features/invitations/data/invitation.dart';
 
 @immutable
 abstract class InvitationState {
+  final Invitation? invitation;
   final bool isLoading;
-  const InvitationState({required this.isLoading});
+  final String? loadingText;
+  final Exception? exception;
+  const InvitationState({
+    this.invitation,
+    required this.isLoading,
+    this.loadingText,
+    this.exception,
+  });
 }
 
 class InvitationStateWaiting extends InvitationState {
@@ -12,20 +20,18 @@ class InvitationStateWaiting extends InvitationState {
 }
 
 class InvitationStateReceived extends InvitationState {
-  final Invitation? invitation;
-  final Exception? exception;
-
   const InvitationStateReceived({
     required super.isLoading,
-    this.invitation,
-    this.exception,
+    super.invitation,
+    super.loadingText,
+    super.exception,
   });
 }
 
 class InvitationStateAccepted extends InvitationState {
-  const InvitationStateAccepted({required super.isLoading});
+  const InvitationStateAccepted({required super.isLoading, super.exception});
 }
 
 class InvitationStateRejected extends InvitationState {
-  const InvitationStateRejected({required super.isLoading});
+  const InvitationStateRejected({required super.isLoading, super.exception});
 }

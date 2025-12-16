@@ -49,7 +49,10 @@ class InvitationPage extends StatelessWidget {
                     InvitationState state,
                   ) async {
                     if (state.isLoading) {
-                      LoadingScreen().show(context: context);
+                      LoadingScreen().show(
+                        context: context,
+                        text: state.loadingText,
+                      );
                     } else {
                       LoadingScreen().hide();
                     }
@@ -82,7 +85,14 @@ class InvitationPage extends StatelessWidget {
                         (route) => false,
                       );
                     } else if (state is InvitationStateRejected) {
-                      Navigator.of(context).pushAndRemoveUntil(
+                      final savedContext = context;
+                      if (state.exception != null) {
+                        await showErrorDialog(
+                          savedContext,
+                          'Joining home failed.',
+                        );
+                      }
+                      Navigator.of(savedContext).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (_) => AuthPage()),
                         (route) => false,
                       );
