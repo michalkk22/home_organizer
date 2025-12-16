@@ -10,6 +10,8 @@ class Invitation {
   final String homeName;
   final String senderId;
   final String senderName;
+  final DateTime expiresAt;
+  final List<String> usedBy;
 
   const Invitation({
     required this.id,
@@ -17,6 +19,8 @@ class Invitation {
     required this.homeName,
     required this.senderId,
     required this.senderName,
+    required this.expiresAt,
+    required this.usedBy,
   });
 
   String get link => invitationDeepLink + id;
@@ -27,12 +31,18 @@ class Invitation {
     required String senderName,
   }) {
     final data = snapshot.data();
+    final timestamp =
+        data?[InvitationsCollectionNames.expiresAtFieldName] as Timestamp;
     return Invitation(
       id: snapshot.id,
       homeId: data?[InvitationsCollectionNames.homeIdFieldName],
       homeName: homeName,
       senderId: data?[InvitationsCollectionNames.createdByFieldName],
       senderName: senderName,
+      expiresAt: timestamp.toDate(),
+      usedBy: List<String>.from(
+        data?[InvitationsCollectionNames.usedByFieldName] ?? [],
+      ),
     );
   }
 }

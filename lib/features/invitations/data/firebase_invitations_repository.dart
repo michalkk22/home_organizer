@@ -18,52 +18,34 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
     this._homesRepository,
   );
 
-  final _db = FirebaseFirestore.instance;
   final _invitations = FirebaseFirestore.instance.collection(
     InvitationsCollectionNames.collectionName,
   );
 
   @override
-  Future<void> accept(String id) async {
+  Future<void> accept(Invitation invitation) async {
     try {
-      final invitationRef = _invitations.doc(id);
-      final doc = await invitationRef.get();
-      final data = doc.data();
-
-      if (data == null) {
-        throw NotFoundInvitationsRepositoryException();
-      }
-
       // check if is not expired
-      if (_isExpired(data)) {
+      if (invitation.expiresAt.isAfter(DateTime.now())) {
         throw ExpiredInvitationsRepositoryException();
       }
 
       // check if already used by this user
-      bool alreadyUsed = false;
-      final usedBy = data[InvitationsCollectionNames.usedByFieldName] as List;
-      if (usedBy.isNotEmpty && usedBy.contains(_userId)) {
-        alreadyUsed = true;
+      if (invitation.usedBy.isNotEmpty) {
+        if (invitation.usedBy.contains(_userId)) {
+          throw AlreadyUsedInvitationsRepositoryException();
+        } else if (invitation.usedBy.length > 4) {
+          throw UsedUpInvitationsRepositoryException();
+        }
       }
 
-      // don't use up invitation wihtout succeding adding user to home
-      final batch = _db.batch();
-
-      // set as used by this user to give him permissions for adding himself to home
-      if (!alreadyUsed) {
-        batch.update(invitationRef, {
-          InvitationsCollectionNames.usedByFieldName: FieldValue.arrayUnion([
-            _userId,
-          ]),
-        });
-      }
-
-      // add to home
-      final homeId = data[InvitationsCollectionNames.homeIdFieldName];
-      await _homesRepository.addMember(homeId, _userId, batch);
-
-      // commit changes
-      await batch.commit();
+      // cloud function adds to home user who adds himself to usedBy
+      final docRef = _invitations.doc(invitation.id);
+      await docRef.update({
+        InvitationsCollectionNames.usedByFieldName: FieldValue.arrayUnion([
+          _userId,
+        ]),
+      });
     } catch (_) {
       throw CouldNotAcceptInvitationsRepositoryException();
     }

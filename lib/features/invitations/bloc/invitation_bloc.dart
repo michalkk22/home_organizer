@@ -25,7 +25,7 @@ class InvitationBloc extends Bloc<InvitationEvent, InvitationState> {
               invitation: received.invitation,
             ),
           );
-          await invitations.accept(received.invitation!.id);
+          await invitations.accept(received.invitation!);
           emit(InvitationStateAccepted(isLoading: false));
         } on Exception catch (e) {
           emit(
