@@ -39,7 +39,7 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
         }
       }
 
-      // cloud function adds to home user who adds himself to usedBy
+      // cloud function adds to home any user who adds himself to usedBy
       final docRef = _invitations.doc(invitation.id);
       await docRef.update({
         InvitationsCollectionNames.usedByFieldName: FieldValue.arrayUnion([
