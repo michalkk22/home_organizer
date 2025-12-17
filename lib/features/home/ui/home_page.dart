@@ -64,7 +64,11 @@ class HomePage extends StatelessWidget {
       },
       listener: (BuildContext context, HomeState state) {
         if (state.isLoading) {
-          LoadingScreen().show(context: context, text: '');
+          if (state is HomeStateNoHomes) {
+            LoadingScreen().show(context: context, text: 'Creating home...');
+          } else {
+            LoadingScreen().show(context: context);
+          }
         } else {
           LoadingScreen().hide();
         }

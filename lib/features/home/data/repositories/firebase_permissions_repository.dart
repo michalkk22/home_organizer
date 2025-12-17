@@ -7,7 +7,7 @@ class FirebasePermissionsRepository implements PermissionsRepository {
   final _db = FirebaseFirestore.instance;
 
   @override
-  Future<Permissions> get({
+  Future<Permissions?> get({
     required String homeId,
     required String userId,
   }) async {
@@ -19,6 +19,21 @@ class FirebasePermissionsRepository implements PermissionsRepository {
             .doc(userId)
             .get();
 
+    if (doc.data() == null) {
+      return null;
+    }
     return Permissions.fromFirestore(doc);
   }
+
+  @override
+  Stream<Permissions> observe({
+    required String homeId,
+    required String userId,
+  }) => _db
+      .collection(HomesCollectionNames.collectionName)
+      .doc(homeId)
+      .collection(PermissionsCollectionNames.collectionName)
+      .doc(userId)
+      .snapshots()
+      .map((doc) => Permissions.fromFirestore(doc));
 }

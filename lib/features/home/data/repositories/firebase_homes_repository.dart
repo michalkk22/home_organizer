@@ -26,22 +26,12 @@ class FirebaseHomesRepository implements HomesRepository {
     if (name.length < 4) {
       throw InvalidNameHomesRepositoryException();
     }
-    try {
-      final batch = _db.batch();
-      final homeRef = _db.collection(HomesCollectionNames.collectionName).doc();
-      final permissionsRef = homeRef
-          .collection(PermissionsCollectionNames.collectionName)
-          .doc(_userId);
 
-      batch.set(homeRef, {
+    try {
+      await _db.collection(HomesCollectionNames.collectionName).doc().set({
         HomesCollectionNames.nameFieldName: name,
         HomesCollectionNames.membersFieldName: [_userId],
       });
-      batch.set(permissionsRef, {
-        PermissionsCollectionNames.isOwnerFieldName: true,
-      });
-
-      await batch.commit();
     } on Exception catch (_) {
       throw CouldNotCreateHomesRepositoryException();
     }
@@ -49,6 +39,16 @@ class FirebaseHomesRepository implements HomesRepository {
     Home? newHome = await home;
     if (newHome == null) {
       throw CouldNotRetrieveDataHomesRepositoryException();
+    }
+
+    while (newHome!.members.isEmpty) {
+      await _permissionsRepository
+          .observe(homeId: newHome.id, userId: _userId)
+          .first;
+      newHome = await home;
+      if (newHome == null) {
+        throw CouldNotRetrieveDataHomesRepositoryException();
+      }
     }
     return newHome;
   }
@@ -85,7 +85,9 @@ class FirebaseHomesRepository implements HomesRepository {
             homeId: homeSnapshot.id,
             userId: id,
           );
-          members.putIfAbsent(member, () => permissions);
+          if (permissions != null) {
+            members.putIfAbsent(member, () => permissions);
+          }
         }
       }
 
