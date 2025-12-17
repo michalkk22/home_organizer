@@ -8,6 +8,7 @@ import 'package:home_organizer/features/invitations/bloc/invitation_bloc.dart';
 import 'package:home_organizer/features/invitations/bloc/invitation_event.dart';
 import 'package:home_organizer/features/invitations/bloc/invitation_state.dart';
 import 'package:home_organizer/features/invitations/data/invitations_repository.dart';
+import 'package:home_organizer/features/invitations/domain/invitations_repository_exception.dart';
 import 'package:home_organizer/features/invitations/ui/views/invitation_view.dart';
 import 'package:home_organizer/features/invitations/ui/views/must_login_view.dart';
 import 'package:home_organizer/utils/dialogs/error_dialog.dart';
@@ -58,7 +59,42 @@ class InvitationPage extends StatelessWidget {
                     }
                     if (state is InvitationStateReceived) {
                       if (state.exception != null) {
-                        showErrorDialog(context, '${state.exception}');
+                        if (state.exception
+                            is NotFoundInvitationsRepositoryException) {
+                          showErrorDialog(
+                            context,
+                            "Couldn't find your invitation.",
+                          );
+                        } else if (state.exception
+                            is ExpiredInvitationsRepositoryException) {
+                          showErrorDialog(context, "Invitation expired.");
+                        } else if (state.exception
+                            is HomeNotFoundInvitationsRepositoryException) {
+                          showErrorDialog(context, "Couldn't find this home.");
+                        } else if (state.exception
+                            is SenderNotFoundInvitationsRepositoryException) {
+                          showErrorDialog(context, "Couldn't find sender.");
+                        } else if (state.exception
+                            is AlreadyUsedInvitationsRepositoryException) {
+                          showErrorDialog(
+                            context,
+                            "You have already used this invitation.",
+                          );
+                        } else if (state.exception
+                            is UsedUpInvitationsRepositoryException) {
+                          showErrorDialog(
+                            context,
+                            "This invitation is used up, please ask sender for new invitation link.",
+                          );
+                        } else if (state.exception
+                            is CouldNotAcceptInvitationsRepositoryException) {
+                          showErrorDialog(
+                            context,
+                            "Couldn't accept this invitation.",
+                          );
+                        } else {
+                          showErrorDialog(context, "Unknown error.");
+                        }
                       }
                     } else if (state is InvitationStateAccepted) {
                       final savedContext = context;
@@ -84,10 +120,14 @@ class InvitationPage extends StatelessWidget {
                     } else if (state is InvitationStateRejected) {
                       final savedContext = context;
                       if (state.exception != null) {
-                        await showErrorDialog(
-                          savedContext,
-                          'Joining home failed.',
-                        );
+                        String text;
+                        if (state.exception
+                            is InvitationAcceptTimeoutException) {
+                          text = 'Timeout';
+                        } else {
+                          text = 'Joining home failed.';
+                        }
+                        await showErrorDialog(savedContext, text);
                       }
                       Navigator.of(savedContext).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (_) => AuthPage()),

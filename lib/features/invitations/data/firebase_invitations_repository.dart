@@ -46,7 +46,9 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
           _userId,
         ]),
       });
-    } catch (e) {
+    } on FirebaseException {
+      throw CouldNotAcceptInvitationsRepositoryException();
+    } on Exception {
       rethrow;
     }
   }
