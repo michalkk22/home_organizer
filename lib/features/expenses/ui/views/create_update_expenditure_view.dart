@@ -9,9 +9,8 @@ import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/data/models/home.dart';
 import 'package:home_organizer/features/home/data/models/permissions.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
-import 'package:home_organizer/utils/dafault_date_picker.dart';
 import 'package:home_organizer/utils/dialogs/error_dialog.dart';
-import 'package:home_organizer/utils/extensions/date_time_format.dart';
+import 'package:home_organizer/widgets/date_picker_button.dart';
 import 'package:home_organizer/widgets/form_row.dart';
 
 class CreateUpdateExpenditureView extends StatefulWidget {
@@ -38,7 +37,7 @@ class _CreateUpdateExpenditureViewState
   late final User currentUser;
   late final Permissions permissions;
 
-  late DateTime _date = widget.expenditure?.date ?? DateTime.now();
+  final _dateController = DatePickerButtonController();
   ExpenditureCategory? _category;
   User? _user;
 
@@ -105,19 +104,7 @@ class _CreateUpdateExpenditureViewState
             ),
             FormRow(
               label: 'Date:',
-              child: TextButton(
-                onPressed:
-                    () async =>
-                        _date =
-                            await defaultDatePicker(context, _date) ?? _date,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(_date.dateFormat),
-                    Icon(Icons.arrow_drop_down),
-                  ],
-                ),
-              ),
+              child: DatePickerButton(controller: _dateController),
             ),
             FormRow(
               label: 'Category:',
@@ -180,7 +167,7 @@ class _CreateUpdateExpenditureViewState
                         user: _user,
                         title: _title.text,
                         amount: trimmed,
-                        date: _date,
+                        date: _dateController.date,
                         category: _category,
                       ),
                       action: widget.action,
