@@ -9,6 +9,7 @@ import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/data/models/home.dart';
 import 'package:home_organizer/features/home/data/models/permissions.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
+import 'package:home_organizer/utils/dafault_date_picker.dart';
 import 'package:home_organizer/utils/dialogs/error_dialog.dart';
 import 'package:home_organizer/utils/extensions/date_time_format.dart';
 import 'package:home_organizer/widgets/form_row.dart';
@@ -108,13 +109,7 @@ class _CreateUpdateExpenditureViewState
                 onPressed:
                     () async =>
                         _date =
-                            await showDatePicker(
-                              context: context,
-                              initialDate: _date,
-                              firstDate: DateTime(2020),
-                              lastDate: DateTime.now().add(Duration(days: 356)),
-                            ) ??
-                            _date,
+                            await defaultDatePicker(context, _date) ?? _date,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
