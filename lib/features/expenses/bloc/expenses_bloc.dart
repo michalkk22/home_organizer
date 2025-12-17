@@ -42,6 +42,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     });
 
     on<_ExpensesEventUpdateCategories>((event, emit) {
+      categories = event.categories.toList();
       emit(
         ExpensesStateLoaded(
           isLoading: false,
@@ -105,7 +106,7 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
         }
       } on Exception catch (e) {
         emit(
-          ExpensesStateCategories(
+          ExpensesStateLoaded(
             isLoading: false,
             expenses: state.expenses,
             categories: state.categories,
