@@ -36,6 +36,18 @@ class InvitationBloc extends Bloc<InvitationEvent, InvitationState> {
           _sub = invitations.observeStatus(invitation.id).listen((status) {
             add(_InvitationEventStatusReceived(status: status));
           });
+
+          await Future.delayed(Duration(seconds: 20));
+          if (_sub != null) {
+            _sub?.cancel();
+            _sub = null;
+            emit(
+              InvitationStateRejected(
+                isLoading: false,
+                exception: InvitationAcceptTimeoutException(),
+              ),
+            );
+          }
         } on Exception catch (e) {
           emit(
             InvitationStateReceived(
@@ -64,10 +76,12 @@ class InvitationBloc extends Bloc<InvitationEvent, InvitationState> {
           break;
         case InvitationsCollectionNames.acceptedStatus:
           _sub?.cancel();
+          _sub = null;
           emit(InvitationStateAccepted(isLoading: false));
           break;
         case InvitationsCollectionNames.failedStatus:
           _sub?.cancel();
+          _sub = null;
           emit(
             InvitationStateRejected(
               isLoading: false,
@@ -99,3 +113,5 @@ class _InvitationEventStatusReceived extends InvitationEvent {
 }
 
 class InvitationAcceptFailException implements Exception {}
+
+class InvitationAcceptTimeoutException implements Exception {}
