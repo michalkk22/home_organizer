@@ -13,4 +13,9 @@ extension Formats on DateTime {
     String dayText = day < 10 ? '0$day' : '$day';
     return '$year.$monthText.$dayText';
   }
+
+  String get yearMonthFormat {
+    String monthText = month < 10 ? '0$month' : '$month';
+    return '$year.$monthText';
+  }
 }

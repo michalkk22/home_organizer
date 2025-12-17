@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:home_organizer/features/expenses/bloc/expenses_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:home_organizer/features/expenses/data/models/expenditure.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure_category.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
+import 'package:home_organizer/utils/extensions/date_time_format.dart';
 import 'package:home_organizer/utils/extensions/date_time_operations.dart';
 import 'package:home_organizer/widgets/date_picker_button.dart';
 import 'package:home_organizer/widgets/form_row.dart';
@@ -22,12 +24,13 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
   late final ValueNotifier<DateTime> _fromDate;
   late final ValueNotifier<DateTime> _toDate;
 
-  final groupByOptions = ['Categories', 'Users'];
+  final groupByOptions = ['Categories', 'Users', 'Months'];
   late String groupByValue;
 
-  late List<Expenditure> expenses;
   late List<ExpenditureCategory> categories;
   late List<User> users;
+
+  late BarChartData chartData;
 
   @override
   void initState() {
@@ -100,33 +103,80 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
                 onSelected: (value) => _onGoupByChanged(value),
               ),
             ),
+            BarChart(chartData),
           ],
         ),
       ),
     );
   }
 
-  _onGoupByChanged(String? value) {
+  void _onGoupByChanged(String? value) {
     if (value != null) {
       groupByValue = value;
       _updateChart();
     }
   }
 
-  _addMonth(int value) {
+  void _addMonth(int value) {
     _toDate.value = _toDate.value.addMonth(value: value);
     _fromDate.value = _toDate.value.addMonth(value: value);
     _updateChart();
   }
 
-  _updateChart() {
-    expenses =
-        widget.allExpenses
-            .where(
-              (expenditre) =>
-                  expenditre.date.isAfter(_fromDate.value) &&
-                  expenditre.date.isBefore(_toDate.value),
-            )
-            .toList();
+  void _updateChart() {
+    Iterable<Expenditure> expenses;
+    final map = <String, double>{};
+    switch (groupByValue) {
+      case 'Months':
+        expenses = widget.allExpenses.toList();
+        for (final e in expenses) {
+          final date = e.date.yearMonthFormat;
+          map[date] = (map[date] ?? 0) + e.amount;
+        }
+        break;
+      case 'Users':
+        expenses = _expensesByDates();
+        for (final e in expenses) {
+          final userName = e.user?.name ?? 'deleted user';
+          map[userName] = (map[userName] ?? 0) + e.amount;
+        }
+        break;
+      case 'Categories':
+        expenses = _expensesByDates();
+        for (final e in expenses) {
+          final category = e.category?.name ?? 'Other';
+          map[category] = (map[category] ?? 0) + e.amount;
+        }
+        break;
+    }
+
+    final barGroups = _toBarGroups(map);
+
+    chartData = BarChartData(barGroups: barGroups);
+  }
+
+  Iterable<Expenditure> _expensesByDates() => widget.allExpenses.where(
+    (expenditre) =>
+        expenditre.date.isAfter(_fromDate.value) &&
+        expenditre.date.isBefore(_toDate.value),
+  );
+
+  List<BarChartGroupData> _toBarGroups(Map<String, double> data) {
+    List<String> keys = data.keys.toList();
+    keys.sort((a, b) {
+      for (var i = 0; i < a.length; i++) {
+        if (a.codeUnits[i] != b.codeUnits[i]) {
+          return a.codeUnits[i] - b.codeUnits[i];
+        }
+      }
+      return 0;
+    });
+
+    return data.entries.map((e) {
+      return BarChartGroupData(
+        x: keys.indexOf(e.key),
+        barRods: [BarChartRodData(toY: e.value, width: 16)],
+      );
+    }).toList();
   }
 }
