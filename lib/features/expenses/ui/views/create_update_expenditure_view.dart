@@ -37,7 +37,7 @@ class _CreateUpdateExpenditureViewState
   late final User currentUser;
   late final Permissions permissions;
 
-  final _dateController = DatePickerButtonController();
+  final ValueNotifier<DateTime> _dateController = ValueNotifier(DateTime.now());
   ExpenditureCategory? _category;
   User? _user;
 
@@ -167,7 +167,7 @@ class _CreateUpdateExpenditureViewState
                         user: _user,
                         title: _title.text,
                         amount: trimmed,
-                        date: _dateController.date,
+                        date: _dateController.value,
                         category: _category,
                       ),
                       action: widget.action,

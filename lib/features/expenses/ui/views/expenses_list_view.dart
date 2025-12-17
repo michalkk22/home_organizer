@@ -5,6 +5,7 @@ import 'package:home_organizer/features/expenses/bloc/expenses_event.dart';
 import 'package:home_organizer/features/expenses/data/models/expenditure.dart';
 import 'package:home_organizer/features/expenses/ui/views/create_update_expenditure_view.dart';
 import 'package:home_organizer/features/expenses/ui/views/expenditure_details_view.dart';
+import 'package:home_organizer/features/expenses/ui/views/expenses_report_view.dart';
 import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 
 class ExpensesListView extends StatelessWidget {
@@ -24,38 +25,71 @@ class ExpensesListView extends StatelessWidget {
           separatorBuilder:
               (BuildContext context, int index) => const Divider(height: 2),
         ),
-        Positioned(
-          bottom: 15,
-          right: 15,
-          child: FloatingActionButton(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            shape: CircleBorder(),
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder:
-                        (_) => MultiBlocProvider(
-                          providers: [
-                            BlocProvider.value(
-                              value: context.read<ExpensesBloc>(),
-                            ),
-                            BlocProvider.value(value: context.read<HomeBloc>()),
-                          ],
-                          child: CreateUpdateExpenditureView(
-                            action: ExpensesAction.add,
-                          ),
-                        ),
-                  ),
-                ),
-            heroTag: 'add_expenditure',
-            child: Icon(
-              Icons.add,
-              color: Theme.of(context).colorScheme.primary,
-              size: Theme.of(context).iconTheme.size ?? 40,
-            ),
-          ),
-        ),
+        _addExpenditureButton(context),
+        _goToReportButton(context),
       ],
+    );
+  }
+
+  Widget _addExpenditureButton(BuildContext context) {
+    return Positioned(
+      bottom: 15,
+      right: 15,
+      child: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: CircleBorder(),
+        onPressed:
+            () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder:
+                    (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider.value(value: context.read<ExpensesBloc>()),
+                        BlocProvider.value(value: context.read<HomeBloc>()),
+                      ],
+                      child: CreateUpdateExpenditureView(
+                        action: ExpensesAction.add,
+                      ),
+                    ),
+              ),
+            ),
+        heroTag: 'add_expenditure',
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).colorScheme.primary,
+          size: Theme.of(context).iconTheme.size ?? 40,
+        ),
+      ),
+    );
+  }
+
+  Widget _goToReportButton(BuildContext context) {
+    return Positioned(
+      bottom: 15 + 65,
+      right: 15,
+      child: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        shape: CircleBorder(),
+        onPressed:
+            () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder:
+                    (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider.value(value: context.read<ExpensesBloc>()),
+                        BlocProvider.value(value: context.read<HomeBloc>()),
+                      ],
+                      child: ExpensesReportView(allExpenses: expenses),
+                    ),
+              ),
+            ),
+        heroTag: 'report_nav',
+        child: Icon(
+          Icons.bar_chart,
+          color: Theme.of(context).colorScheme.primary,
+          size: Theme.of(context).iconTheme.size ?? 40,
+        ),
+      ),
     );
   }
 
