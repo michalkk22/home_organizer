@@ -64,7 +64,9 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
 
       String? id;
       if (!_needNew) {
-        id = await _findCreated(home.id);
+        try {
+          id = await _findCreated(home.id);
+        } catch (_) {}
         _needNew = true;
       }
       id ??= await _create(home.id);
@@ -84,13 +86,18 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
               InvitationsCollectionNames.homeIdFieldName,
               isEqualTo: homeId,
             )
+            .orderBy(
+              InvitationsCollectionNames.expiresAtFieldName,
+              descending: true,
+            )
+            .limit(1)
             .get();
-    // if there are any invitations, return the first not used up or expired yet
+    // if there are any invitations, return the newest not used up or expired yet
     if (snapshot.docs.isNotEmpty) {
       for (var inv in snapshot.docs) {
         final data = inv.data();
         final usedBy = data[InvitationsCollectionNames.usedByFieldName] as List;
-        if (!_isExpired(data) && usedBy.length <= 5) {
+        if (!_isExpired(data) && usedBy.length < 5) {
           return snapshot.docs.first.id;
         }
       }
