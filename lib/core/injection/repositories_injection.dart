@@ -35,6 +35,10 @@ class RepositoriesInjection {
   }
 
   void setupHomeScopedRepositories(String userId, String homeId) {
+    // check if acctually need to register (invitation opened while in home case), need to enhance flow if user can have multiple homes
+    if (getIt.isRegistered<ChatRepository>()) {
+      return;
+    }
     getIt.registerLazySingleton<ChatRepository>(
       () => FirebaseChatRepository(userId, homeId, getIt<UsersRepository>()),
     );
