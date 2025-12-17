@@ -42,6 +42,7 @@ class FirebaseHomesRepository implements HomesRepository {
     }
 
     while (newHome!.members.isEmpty) {
+      // TODO: add timeout
       await _permissionsRepository
           .observe(homeId: newHome.id, userId: _userId)
           .first;

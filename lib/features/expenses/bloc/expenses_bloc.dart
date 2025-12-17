@@ -42,11 +42,6 @@ class ExpensesBloc extends Bloc<ExpensesEvent, ExpensesState> {
     });
 
     on<_ExpensesEventUpdateCategories>((event, emit) {
-      categories = event.categories;
-      if (categories.isEmpty) {
-        categoriesRepo.copyDefaults();
-        return;
-      }
       emit(
         ExpensesStateLoaded(
           isLoading: false,

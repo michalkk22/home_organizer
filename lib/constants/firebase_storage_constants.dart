@@ -44,7 +44,6 @@ abstract class ExpensesCollectionNames {
 
 abstract class ExpenditureCategoriesCollectionNames {
   static const collectionName = 'expenditureCategories';
-  static const defaultsCollectionName = 'defaultExpenditureCategories';
   static const nameFieldName = 'name';
 }
 

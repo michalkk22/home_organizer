@@ -6,5 +6,4 @@ abstract class ExpenditureCategoriesRepository {
   Future<ExpenditureCategory> add(ExpenditureCategory category);
   Future<void> update(ExpenditureCategory category);
   Future<void> delete(ExpenditureCategory category);
-  Future<void> copyDefaults();
 }

@@ -29,25 +29,6 @@ class FirebaseExpenditureCategoriesRepository
   }
 
   @override
-  Future<void> copyDefaults() async {
-    try {
-      final defaults = _db.collection(
-        ExpenditureCategoriesCollectionNames.defaultsCollectionName,
-      );
-
-      final snapshot = await defaults.get();
-      final batch = _db.batch();
-      for (var doc in snapshot.docs) {
-        batch.set(_categories.doc(doc.id), doc.data());
-      }
-
-      await batch.commit();
-    } catch (e) {
-      throw CouldNotCopyDefaultsExpenditureCategoriesRepositoryException();
-    }
-  }
-
-  @override
   Future<ExpenditureCategory> get(String id) async {
     try {
       final doc = await _categories.doc(id).get();
