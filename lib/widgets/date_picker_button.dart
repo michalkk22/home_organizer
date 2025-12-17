@@ -15,7 +15,7 @@ class _DatePickerButtonState extends State<DatePickerButton> {
   @override
   void initState() {
     super.initState();
-    date = DateTime.now();
+    date = widget.controller.date;
   }
 
   Future<void> _updateDate() async {
@@ -45,6 +45,9 @@ class _DatePickerButtonState extends State<DatePickerButton> {
 
 class DatePickerButtonController {
   DateTime? _date;
+
+  DatePickerButtonController({DateTime? date}) : _date = date;
+
   void set(DateTime date) => _date = date;
   DateTime get date => _date ?? DateTime.now();
 }
