@@ -11,6 +11,7 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
   final String _userId;
   final UsersRepository _usersRepository;
   final HomesRepository _homesRepository;
+  bool _needNew = false;
 
   FirebaseInvitationsRepository(
     this._userId,
@@ -61,7 +62,11 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
         throw NotInHomeInvitationsRepositoryException();
       }
 
-      var id = await _findCreated(home.id);
+      String? id;
+      if (!_needNew) {
+        id = await _findCreated(home.id);
+        _needNew = true;
+      }
       id ??= await _create(home.id);
 
       return invitationDeepLink + id;
