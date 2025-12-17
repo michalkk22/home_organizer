@@ -24,7 +24,7 @@ abstract class ChatCollectionNames {
 abstract class InvitationsCollectionNames {
   static const String collectionName = 'invitations';
   static const String homeIdFieldName = 'homeId';
-  static const String createdByFieldName = 'createbBy';
+  static const String createdByFieldName = 'createdBy';
   static const String expiresAtFieldName = 'expiresAt';
   static const String usedByFieldName = 'usedBy';
   static const String statusFieldName = 'status';
