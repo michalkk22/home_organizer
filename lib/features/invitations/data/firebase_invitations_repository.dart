@@ -26,7 +26,7 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
   Future<void> accept(Invitation invitation) async {
     try {
       // check if is not expired
-      if (invitation.expiresAt.isAfter(DateTime.now())) {
+      if (invitation.expiresAt.isBefore(DateTime.now())) {
         throw ExpiredInvitationsRepositoryException();
       }
 
@@ -46,8 +46,8 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
           _userId,
         ]),
       });
-    } catch (_) {
-      throw CouldNotAcceptInvitationsRepositoryException();
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -63,6 +63,8 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
       id ??= await _create(home.id);
 
       return invitationDeepLink + id;
+    } on NotInHomeInvitationsRepositoryException {
+      rethrow;
     } catch (e) {
       throw CouldNotCreateInvitationsRepositoryException();
     }
@@ -72,8 +74,8 @@ class FirebaseInvitationsRepository implements InvitationsRepository {
     final snapshot =
         await _invitations
             .where(
-              InvitationsCollectionNames.createdByFieldName,
-              isEqualTo: _userId,
+              InvitationsCollectionNames.homeIdFieldName,
+              isEqualTo: homeId,
             )
             .get();
     // if there are any invitations, return the first not used up or expired yet

@@ -58,10 +58,7 @@ class InvitationPage extends StatelessWidget {
                     }
                     if (state is InvitationStateReceived) {
                       if (state.exception != null) {
-                        showErrorDialog(
-                          context,
-                          '${state.exception}, invitation: ${state.invitation}',
-                        );
+                        showErrorDialog(context, '${state.exception}');
                       }
                     } else if (state is InvitationStateAccepted) {
                       final savedContext = context;

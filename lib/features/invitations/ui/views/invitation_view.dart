@@ -42,7 +42,7 @@ class InvitationView extends StatelessWidget {
                 () => context.read<InvitationBloc>().add(
                   InvitationEventAnswer(accept: false),
                 ),
-            child: Text('Back to login'),
+            child: Text('Back'),
           ),
         ],
       ),
