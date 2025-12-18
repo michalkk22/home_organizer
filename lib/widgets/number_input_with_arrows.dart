@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_organizer/widgets/themed_text_field.dart';
 
 class NumberInputWithArrows extends StatefulWidget {
   const NumberInputWithArrows({
@@ -72,23 +73,14 @@ class _NumberInputWithArrowsState extends State<NumberInputWithArrows> {
         children: [
           Expanded(
             flex: 1,
-            child: TextFormField(
+            child: ThemedTextField(
               textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(8.0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
               controller: _controller,
               keyboardType: TextInputType.numberWithOptions(
                 decimal: true,
                 signed: false,
               ),
-              onEditingComplete: () => _edit(),
+              onChanged: () => _edit(),
             ),
           ),
           SizedBox(
