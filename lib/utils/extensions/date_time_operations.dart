@@ -3,7 +3,7 @@ extension DateTimeOperations on DateTime {
     return DateTime(
       year,
       month + value,
-      day,
+      1,
       hour,
       minute,
       second,

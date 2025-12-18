@@ -8,8 +8,8 @@ import 'package:home_organizer/features/home/bloc/home_bloc.dart';
 import 'package:home_organizer/features/home/data/models/user.dart';
 import 'package:home_organizer/utils/extensions/date_time_format.dart';
 import 'package:home_organizer/utils/extensions/date_time_operations.dart';
-import 'package:home_organizer/widgets/date_picker_button.dart';
 import 'package:home_organizer/widgets/form_row.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 class ExpensesReportView extends StatefulWidget {
   const ExpensesReportView({super.key, required this.allExpenses});
@@ -20,9 +20,7 @@ class ExpensesReportView extends StatefulWidget {
 }
 
 class _ExpensesReportViewState extends State<ExpensesReportView> {
-  final now = DateTime.now();
-  late final ValueNotifier<DateTime> _fromDate;
-  late final ValueNotifier<DateTime> _toDate;
+  late DateTime date;
 
   final groupByOptions = ['Categories', 'Users', 'Months'];
   late String groupByValue;
@@ -31,22 +29,14 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
   late List<User> users;
 
   late BarChartData chartData;
+  late double total;
 
   @override
   void initState() {
     super.initState();
 
-    int year = now.year;
-    int month = now.month;
-    _fromDate = ValueNotifier(DateTime(year, month));
-    if (month == 12) {
-      year++;
-      month = 0;
-    }
-    _toDate = ValueNotifier(DateTime(year, month + 1));
-
-    _fromDate.addListener(() => _updateChart());
-    _toDate.addListener(() => _updateChart());
+    final now = DateTime.now();
+    date = DateTime(now.year, now.month);
 
     groupByValue = groupByOptions[0];
 
@@ -66,58 +56,58 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(title: Text('Expenses report')),
-      body: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DatePickerButton(controller: _fromDate),
-                Text('to'),
-                DatePickerButton(controller: _toDate),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () => _addMonth(-1),
-                  icon: Icon(Icons.arrow_left),
-                ),
-                Text('month'),
-                IconButton(
-                  onPressed: () => _addMonth(1),
-                  icon: Icon(Icons.arrow_right),
-                ),
-              ],
-            ),
-            FormRow(
-              label: 'Group by',
-              child: DropdownMenu<String>(
-                initialSelection: groupByOptions[0],
-                dropdownMenuEntries:
-                    groupByOptions
-                        .map(
-                          (value) => DropdownMenuEntry<String>(
-                            value: value,
-                            label: value,
-                          ),
-                        )
-                        .toList(),
-                onSelected: (value) => _onGoupByChanged(value),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () => _addMonth(-1),
+                    icon: Icon(Icons.arrow_left),
+                  ),
+                  TextButton(
+                    onPressed: _pickMonth,
+                    child: Text(date.yearMonthFormat),
+                  ),
+                  IconButton(
+                    onPressed: () => _addMonth(1),
+                    icon: Icon(Icons.arrow_right),
+                  ),
+                ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: SizedBox(
-                width: width * 0.9,
-                height: height * 0.5,
-                child: BarChart(chartData),
+              Text('Total this period: $total'),
+              FormRow(
+                label: 'Group by',
+                child: DropdownMenu<String>(
+                  initialSelection: groupByOptions[0],
+                  dropdownMenuEntries:
+                      groupByOptions
+                          .map(
+                            (value) => DropdownMenuEntry<String>(
+                              value: value,
+                              label: value,
+                            ),
+                          )
+                          .toList(),
+                  onSelected: (value) => _onGoupByChanged(value),
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: SizedBox(
+                  width: width * 0.9,
+                  height: height * 0.5,
+                  child: BarChart(chartData),
+                ),
+              ),
+              SizedBox(height: 30),
+              if (groupByValue == 'Users') Text('users table'),
+            ],
+          ),
         ),
       ),
     );
@@ -130,16 +120,25 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
     }
   }
 
+  Future<void> _pickMonth() async {
+    date =
+        await showMonthPicker(
+          context: context,
+          initialDate: date,
+          firstDate: DateTime(2020),
+          lastDate: DateTime.now().add(Duration(days: 356)),
+        ) ??
+        date;
+    _updateChart();
+  }
+
   void _addMonth(int value) {
-    _toDate.value = _toDate.value.addMonth(value: value);
-    _fromDate.value = _toDate.value.addMonth(value: value);
+    date = date.addMonth(value: value);
     _updateChart();
   }
 
   void _updateChart() {
-    _validateDates();
-
-    final map = _getMap();
+    final map = _getMapAndCalcTotal();
     List<String> keys = map.keys.toList();
     keys.sort((a, b) {
       for (var i = 0; i < a.length; i++) {
@@ -182,19 +181,15 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
     });
   }
 
-  void _validateDates() {
-    if (_fromDate.value.isAfter(_toDate.value)) {
-      _toDate.value = _fromDate.value.add(Duration(days: 30));
-    }
-  }
-
-  Map<String, double> _getMap() {
+  Map<String, double> _getMapAndCalcTotal() {
     Iterable<Expenditure> expenses;
+    total = 0;
     final map = <String, double>{};
     switch (groupByValue) {
       case 'Months':
         expenses = widget.allExpenses.toList();
         for (final e in expenses) {
+          total += e.amount;
           final date = e.date.yearMonthFormat;
           map[date] = (map[date] ?? 0) + e.amount;
         }
@@ -202,6 +197,7 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
       case 'Users':
         expenses = _expensesByDates();
         for (final e in expenses) {
+          total += e.amount;
           final userName = e.user?.name ?? 'deleted user';
           map[userName] = (map[userName] ?? 0) + e.amount;
         }
@@ -209,6 +205,7 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
       case 'Categories':
         expenses = _expensesByDates();
         for (final e in expenses) {
+          total += e.amount;
           final category = e.category?.name ?? 'Other';
           map[category] = (map[category] ?? 0) + e.amount;
         }
@@ -218,9 +215,7 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
   }
 
   Iterable<Expenditure> _expensesByDates() => widget.allExpenses.where(
-    (expenditre) =>
-        expenditre.date.isAfter(_fromDate.value) &&
-        expenditre.date.isBefore(_toDate.value),
+    (expenditre) => expenditre.date.isBetween(date, date.addMonth()),
   );
 
   List<BarChartGroupData> _toBarGroups(
