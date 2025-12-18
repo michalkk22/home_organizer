@@ -37,7 +37,7 @@ class _CreateUpdateExpenditureViewState
   late final User currentUser;
   late final Permissions permissions;
 
-  final ValueNotifier<DateTime> _dateController = ValueNotifier(DateTime.now());
+  late final ValueNotifier<DateTime> _dateController;
   ExpenditureCategory? _category;
   User? _user;
 
@@ -59,6 +59,7 @@ class _CreateUpdateExpenditureViewState
     permissions = context.read<HomeBloc>().permissions;
 
     _user = widget.expenditure?.user ?? currentUser;
+    _dateController = ValueNotifier(widget.expenditure?.date ?? DateTime.now());
   }
 
   @override
