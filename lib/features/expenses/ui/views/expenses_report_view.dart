@@ -109,10 +109,13 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
                 onSelected: (value) => _onGoupByChanged(value),
               ),
             ),
-            SizedBox(
-              width: width * 0.9,
-              height: height * 0.5,
-              child: BarChart(chartData),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: SizedBox(
+                width: width * 0.9,
+                height: height * 0.5,
+                child: BarChart(chartData),
+              ),
             ),
           ],
         ),
@@ -148,26 +151,28 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
     });
 
     final barGroups = _toBarGroups(map, keys);
-    final titlesData = FlTitlesData(
-      show: true,
-      bottomTitles: AxisTitles(
-        sideTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 30,
-          getTitlesWidget:
-              (value, meta) =>
-                  SideTitleWidget(meta: meta, child: Text(keys[value.toInt()])),
-        ),
-      ),
-      leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-    );
+    final avg = _averageY(barGroups);
+    final titlesData = _titlesData(keys);
 
     setState(() {
       chartData = BarChartData(
         barGroups: barGroups,
+        extraLinesData: ExtraLinesData(
+          horizontalLines: [
+            HorizontalLine(
+              y: avg,
+              strokeWidth: 1,
+              dashArray: [8, 6],
+              label: HorizontalLineLabel(
+                show: true,
+                alignment: Alignment.topRight,
+                labelResolver: (_) => 'Avg: ${avg.toStringAsFixed(2)}',
+              ),
+            ),
+          ],
+        ),
         titlesData: titlesData,
+        barTouchData: barTouchData,
         borderData: FlBorderData(
           border: Border(left: BorderSide(), bottom: BorderSide()),
         ),
@@ -175,6 +180,12 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
         alignment: BarChartAlignment.spaceAround,
       );
     });
+  }
+
+  void _validateDates() {
+    if (_fromDate.value.isAfter(_toDate.value)) {
+      _toDate.value = _fromDate.value.add(Duration(days: 30));
+    }
   }
 
   Map<String, double> _getMap() {
@@ -234,12 +245,69 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
               ),
             ),
           ],
+          showingTooltipIndicators: [0],
         );
       }).toList();
 
-  void _validateDates() {
-    if (_fromDate.value.isAfter(_toDate.value)) {
-      _toDate.value = _fromDate.value.add(Duration(days: 30));
-    }
+  double _averageY(List<BarChartGroupData> groups) {
+    final values = groups.expand((g) => g.barRods).map((r) => r.toY).toList();
+
+    return values.isEmpty ? 0 : values.reduce((a, b) => a + b) / values.length;
   }
+
+  FlTitlesData _titlesData(List<String> keys) => FlTitlesData(
+    show: true,
+    bottomTitles: AxisTitles(
+      sideTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 30,
+        getTitlesWidget:
+            (value, meta) =>
+                SideTitleWidget(meta: meta, child: Text(keys[value.toInt()])),
+      ),
+    ),
+    leftTitles: AxisTitles(
+      sideTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 40,
+        getTitlesWidget: _leftTitles,
+      ),
+    ),
+    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+  );
+
+  Widget _leftTitles(double value, TitleMeta meta) {
+    if (value == meta.max) {
+      return Container();
+    }
+    return SideTitleWidget(
+      meta: meta,
+      child: Text(
+        meta.formattedValue,
+        style: Theme.of(context).textTheme.labelSmall,
+      ),
+    );
+  }
+
+  BarTouchData get barTouchData => BarTouchData(
+    enabled: false,
+    touchTooltipData: BarTouchTooltipData(
+      getTooltipColor: (group) => Colors.transparent,
+      tooltipPadding: EdgeInsets.zero,
+      tooltipMargin: 2,
+      getTooltipItem: (
+        BarChartGroupData group,
+        int groupIndex,
+        BarChartRodData rod,
+        int rodIndex,
+      ) {
+        return BarTooltipItem(
+          rod.toY.round().toString(),
+          Theme.of(context).textTheme.labelMedium ??
+              const TextStyle(fontWeight: FontWeight.bold),
+        );
+      },
+    ),
+  );
 }
