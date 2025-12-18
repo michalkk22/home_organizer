@@ -33,7 +33,10 @@ class _ChatInputState extends State<ChatInput> {
               minLines: 1,
               maxLines: 3,
               controller: _controller,
-              decoration: InputDecoration(hintText: 'Type message...'),
+              decoration: InputDecoration(
+                hintText: 'Type message...',
+                border: OutlineInputBorder(borderSide: BorderSide.none),
+              ),
             ),
           ),
           IconButton(
