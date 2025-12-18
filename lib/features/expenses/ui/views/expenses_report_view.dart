@@ -52,12 +52,18 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
 
     categories = context.read<ExpensesBloc>().categories;
     users = context.read<HomeBloc>().home.members.keys.toList();
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _updateChart();
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(title: Text('Expenses report')),
       body: Padding(
@@ -103,7 +109,11 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
                 onSelected: (value) => _onGoupByChanged(value),
               ),
             ),
-            BarChart(chartData),
+            SizedBox(
+              width: width * 0.9,
+              height: height * 0.5,
+              child: BarChart(chartData),
+            ),
           ],
         ),
       ),
@@ -124,6 +134,50 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
   }
 
   void _updateChart() {
+    _validateDates();
+
+    final map = _getMap();
+    List<String> keys = map.keys.toList();
+    keys.sort((a, b) {
+      for (var i = 0; i < a.length; i++) {
+        if (a.codeUnits[i] != b.codeUnits[i]) {
+          return b.codeUnits[i] - a.codeUnits[i];
+        }
+      }
+      return 0;
+    });
+
+    final barGroups = _toBarGroups(map, keys);
+    final titlesData = FlTitlesData(
+      show: true,
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          reservedSize: 30,
+          getTitlesWidget:
+              (value, meta) =>
+                  SideTitleWidget(meta: meta, child: Text(keys[value.toInt()])),
+        ),
+      ),
+      leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    );
+
+    setState(() {
+      chartData = BarChartData(
+        barGroups: barGroups,
+        titlesData: titlesData,
+        borderData: FlBorderData(
+          border: Border(left: BorderSide(), bottom: BorderSide()),
+        ),
+        gridData: const FlGridData(show: false),
+        alignment: BarChartAlignment.spaceAround,
+      );
+    });
+  }
+
+  Map<String, double> _getMap() {
     Iterable<Expenditure> expenses;
     final map = <String, double>{};
     switch (groupByValue) {
@@ -149,10 +203,7 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
         }
         break;
     }
-
-    final barGroups = _toBarGroups(map);
-
-    chartData = BarChartData(barGroups: barGroups);
+    return map;
   }
 
   Iterable<Expenditure> _expensesByDates() => widget.allExpenses.where(
@@ -161,22 +212,34 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
         expenditre.date.isBefore(_toDate.value),
   );
 
-  List<BarChartGroupData> _toBarGroups(Map<String, double> data) {
-    List<String> keys = data.keys.toList();
-    keys.sort((a, b) {
-      for (var i = 0; i < a.length; i++) {
-        if (a.codeUnits[i] != b.codeUnits[i]) {
-          return a.codeUnits[i] - b.codeUnits[i];
-        }
-      }
-      return 0;
-    });
+  List<BarChartGroupData> _toBarGroups(
+    Map<String, double> data,
+    List<String> keys,
+  ) =>
+      data.entries.map((e) {
+        return BarChartGroupData(
+          x: keys.indexOf(e.key),
+          barRods: [
+            BarChartRodData(
+              toY: e.value,
+              width: 16,
+              borderRadius: BorderRadius.zero,
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.secondary,
+                  Theme.of(context).colorScheme.inversePrimary,
+                ],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+              ),
+            ),
+          ],
+        );
+      }).toList();
 
-    return data.entries.map((e) {
-      return BarChartGroupData(
-        x: keys.indexOf(e.key),
-        barRods: [BarChartRodData(toY: e.value, width: 16)],
-      );
-    }).toList();
+  void _validateDates() {
+    if (_fromDate.value.isAfter(_toDate.value)) {
+      _toDate.value = _fromDate.value.add(Duration(days: 30));
+    }
   }
 }
