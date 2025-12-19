@@ -120,7 +120,7 @@ class HomePage extends StatelessWidget {
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Send this link to peaple you want to invite!'),
+                        Text('Send this link to people you want to invite!'),
                         SizedBox(height: 20),
                         SelectableText(link),
                       ],
