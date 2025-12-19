@@ -27,9 +27,12 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
 
   late List<ExpenditureCategory> categories;
   late List<User> users;
+  late Iterable<Expenditure> expenses;
 
-  late BarChartData chartData;
+  late Map<String, double> map;
+  late double avg;
   late double total;
+  late BarChartData chartData;
 
   @override
   void initState() {
@@ -105,7 +108,27 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
                 ),
               ),
               SizedBox(height: 30),
-              if (groupByValue == 'Users') Text('users table'),
+              if (groupByValue == 'Users') Text('Average per user: $avg'),
+              if (groupByValue == 'Users')
+                DataTable(
+                  columns: const [
+                    DataColumn(label: Text('User')),
+                    DataColumn(label: Text('Expenses')),
+                    DataColumn(label: Text('Balance')),
+                  ],
+                  rows:
+                      map.entries
+                          .map(
+                            (entry) => DataRow(
+                              cells: [
+                                DataCell(Text(entry.key)),
+                                DataCell(Text('${entry.value}')),
+                                DataCell(Text('${avg - entry.value}')),
+                              ],
+                            ),
+                          )
+                          .toList(),
+                ),
             ],
           ),
         ),
@@ -138,7 +161,7 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
   }
 
   void _updateChart() {
-    final map = _getMapAndCalcTotal();
+    _getMapAndTotal();
     List<String> keys = map.keys.toList();
     keys.sort((a, b) {
       for (var i = 0; i < a.length; i++) {
@@ -150,7 +173,7 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
     });
 
     final barGroups = _toBarGroups(map, keys);
-    final avg = _averageY(barGroups);
+    avg = _averageY(barGroups);
     final titlesData = _titlesData(keys);
 
     setState(() {
@@ -181,10 +204,9 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
     });
   }
 
-  Map<String, double> _getMapAndCalcTotal() {
-    Iterable<Expenditure> expenses;
+  _getMapAndTotal() {
     total = 0;
-    final map = <String, double>{};
+    map = <String, double>{};
     switch (groupByValue) {
       case 'Months':
         expenses = widget.allExpenses.toList();
@@ -211,7 +233,6 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
         }
         break;
     }
-    return map;
   }
 
   Iterable<Expenditure> _expensesByDates() => widget.allExpenses.where(
