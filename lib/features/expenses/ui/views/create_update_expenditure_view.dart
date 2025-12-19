@@ -112,6 +112,7 @@ class _CreateUpdateExpenditureViewState
               child: Row(
                 children: [
                   DropdownMenu<ExpenditureCategory?>(
+                    initialSelection: widget.expenditure?.category,
                     dropdownMenuEntries:
                         categories
                             .map(
