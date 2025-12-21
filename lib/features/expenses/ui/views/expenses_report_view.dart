@@ -108,7 +108,8 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
                 ),
               ),
               SizedBox(height: 30),
-              if (groupByValue == 'Users') Text('Average per user: $avg'),
+              if (groupByValue == 'Users')
+                Text('Average per user: ${avg.toStringAsFixed(2)}'),
               if (groupByValue == 'Users')
                 DataTable(
                   columns: const [
@@ -123,7 +124,9 @@ class _ExpensesReportViewState extends State<ExpensesReportView> {
                               cells: [
                                 DataCell(Text(entry.key)),
                                 DataCell(Text('${entry.value}')),
-                                DataCell(Text('${avg - entry.value}')),
+                                DataCell(
+                                  Text((avg - entry.value).toStringAsFixed(2)),
+                                ),
                               ],
                             ),
                           )
